@@ -63,10 +63,14 @@ public class UITest
         var session = new GameObject("session", typeof(Session)).GetComponent<Session>();
         session.UI = ui;
 
-        session.OnDestroyed(new Asteroid()
-                            {
-                                TimeToDivide = 3
-                            });
+        var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
+
+        var asteroidManager = new AsteroidManager(field);
+
+        var asteroid = asteroidManager.CreateAsteroid(new Vector3(5, 0, 0), Vector3.zero, takeFactoryValues: false);
+        asteroid.TimeToDivide = 3;
+
+        session.OnDestroyed(asteroid);
 
         Assert.AreEqual(10, session.Score);
         Assert.AreEqual(10, ui.Score);
@@ -76,19 +80,20 @@ public class UITest
     public void SessionSaveTest()
     {
         PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
 
         var session = new GameObject("session", typeof(Session)).GetComponent<Session>();
-        session.HighScore = 100;
+        session.Score = 100;
         session.SaveToPrefs();
 
         Assert.AreEqual(100, PlayerPrefs.GetInt(StringConstants.HighScorePref));
 
-        session.HighScore = 90;
+        session.Score = 90;
         session.SaveToPrefs();
 
         Assert.AreEqual(100, PlayerPrefs.GetInt(StringConstants.HighScorePref));
 
-        session.HighScore = 101;
+        session.Score = 101;
         session.SaveToPrefs();
 
         Assert.AreEqual(101, PlayerPrefs.GetInt(StringConstants.HighScorePref));

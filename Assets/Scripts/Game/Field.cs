@@ -114,11 +114,6 @@ public class Field : MonoBehaviour
             AllMovableObjects.Remove(movable);
         }
 
-        if (!AreThereAnyAsteroids)
-        {
-            CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
-        }
-
         movable.Collided -= OnCollided;
 
         movable.SelfDestroy();
@@ -143,6 +138,11 @@ public class Field : MonoBehaviour
         if (collideObject is Asteroid && collidedWith is Bullet)
         {
             _asteroidManager.CheckCollisions(collidedWith as Bullet, collideObject as Asteroid);
+
+            if (!AreThereAnyAsteroids)
+            {
+                CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
+            }
         }
 
         if (collideObject is Asteroid && collidedWith is Player)
@@ -220,11 +220,6 @@ public class Field : MonoBehaviour
     {
         DeleteAllMovableObjects();
 
-        if (PlayerFactory.Instance == null)
-        {
-            PlayerFactory.Instance = ScriptableObject.CreateInstance<PlayerFactory>();
-        }
-
         SpawnPlayer();
         CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
     }
@@ -234,11 +229,11 @@ public class Field : MonoBehaviour
         SpawnPlayer(PlayerFactory.Instance.CreatePlayer(), true);
     }
 
-    private void DeleteAllMovableObjects()
+    public void DeleteAllMovableObjects()
     {
-        while (transform.childCount > 0)
+        while (AllMovableObjects.Any())
         {
-            Destroy(transform.GetChild(0).gameObject);
+            Remove(AllMovableObjects.First());
         }
 
         AllMovableObjects.Clear();

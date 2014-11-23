@@ -19,11 +19,12 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public static void PlaySound(AudioClip clip)
+    public static void PlaySound(AudioClip clip, float volume = 1f)
     {
         if (Instance.audio && clip)
         {
             Instance.audio.clip = clip;
+            Instance.audio.volume = volume;
             Instance.audio.Play();
         }
     }

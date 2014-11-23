@@ -92,4 +92,21 @@ public class FieldCreationTest
 
         Assert.AreNotSame(null, field.Player);
     }
+
+    [Test]
+    public void DeleteTest()
+    {
+        var session = new GameObject("session", typeof(Session)).GetComponent<Session>();
+        var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
+        field.SetSize(10, 10);
+
+        session.Field = field;
+        session.Restart();
+
+        Assert.AreEqual(5, field.AllMovableObjects.Count);
+
+        field.DeleteAllMovableObjects();
+
+        Assert.AreEqual(0, field.AllMovableObjects.Count);
+    }
 }

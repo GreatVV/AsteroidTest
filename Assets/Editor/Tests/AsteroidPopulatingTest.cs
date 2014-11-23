@@ -69,13 +69,11 @@ public class AsteroidPopulatingTest {
         var newAsteroids = asteroidManager.CheckCollisions(bullet, asteroid);
 
         Assert.AreEqual(0, newAsteroids.Count);
-        Assert.AreEqual(4, field.AllMovableObjects.Count);
     }
 
     [Test]
     public void PlayerMoveTest()
     {
-        PlayerFactory.Instance = ScriptableObject.CreateInstance<PlayerFactory>();
 
         var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
         field.SetSize(10, 10);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MovableBase, ITeleportable
@@ -13,6 +14,30 @@ public class Player : MovableBase, ITeleportable
     #region ITeleportable Members
 
     public bool WasTeleported { get; set; }
+
+    public bool IsUndestructable
+    {
+        get
+        {
+            return _isUndestructable;
+        }
+        set
+        {
+            _isUndestructable = value;
+            FireIndestructableStateChanged(value);
+        }
+    }
+
+    public event Action<bool> IndestructableStateChanged;
+
+    protected virtual void FireIndestructableStateChanged(bool state)
+    {
+        Action<bool> handler = IndestructableStateChanged;
+        if (handler != null)
+        {
+            handler(state);
+        }
+    }
 
     [SerializeField]
     private AudioClip _shootSound = null;
@@ -30,7 +55,7 @@ public class Player : MovableBase, ITeleportable
         bullet.Destroyed += OnBulletDestroyed;
         ShootedBullets.Add(bullet);
 
-        SoundManager.PlaySound(_shootSound);
+        SoundManager.PlaySound(_shootSound, 0.2f);
 
         Field.AddMovable(bullet);
     }
@@ -39,7 +64,7 @@ public class Player : MovableBase, ITeleportable
 
     public override void SelfDestroy()
     {
-        SoundManager.PlaySound(_deathSound);
+        SoundManager.PlaySound(_deathSound, 0.5f);
 
         if (Field.Player == this)
         {
@@ -57,6 +82,7 @@ public class Player : MovableBase, ITeleportable
     private void Start()
     {
         CheckBulletFactory();
+        
     }
 
     private void CheckBulletFactory()
@@ -72,7 +98,7 @@ public class Player : MovableBase, ITeleportable
         }
     }
 
-    public bool IsUndestructable = true;
+    private bool _isUndestructable = true;
 
     private float _undestructableTime = GameLogicParameters.UndestructableTime;
 

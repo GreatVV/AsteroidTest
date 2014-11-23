@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SetToHighScoreOnStart : MonoBehaviour {
 
 	// Use this for initialization
-	void Start ()
+	void OnEnable ()
 	{
 	    GetComponent<Text>().text = string.Format("High score: {0}", PlayerPrefs.GetInt(StringConstants.HighScorePref, 0));
 	}

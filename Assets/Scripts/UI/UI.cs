@@ -64,9 +64,17 @@ public class UI : MonoBehaviour
         }
     }
 
-    public void ShowGameOver()
+    public void ShowGameOver(bool show = true)
     {
-        Application.LoadLevel(StringConstants.MenuScene);
+        if (_gameOverScreen)
+        {
+            _gameOverScreen.SetActive(show);
+        }
+        //Application.LoadLevel(StringConstants.MenuScene);
     }
+
+    [SerializeField]
+    private GameObject _gameOverScreen;
+
 }
 

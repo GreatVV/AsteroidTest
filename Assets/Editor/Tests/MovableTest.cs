@@ -16,8 +16,9 @@ namespace Assets
             var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
             field.SetSize(width, height);
 
-            var asteroid = Substitute.For<IMovable>();
-            asteroid.Position.Returns(new Vector3(1, 5, 0));
+            var asteroidManager = new AsteroidManager(field);
+
+            var asteroid = asteroidManager.CreateAsteroid(new Vector3(1, 5, 0), Vector3.zero, takeFactoryValues: false);
 
             field.AddMovable(asteroid);
 
@@ -35,19 +36,18 @@ namespace Assets
             var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
             field.SetSize(width, height);
 
-            var asteroid = Substitute.For<IMovable>();
-            asteroid.Position.Returns(new Vector3(5, 0, 0));
-            field.AddMovable(asteroid);
+            var asteroidManager = new AsteroidManager(field);
 
-            var ship = Substitute.For<IMovable>();
-            ship.Position.Returns(new Vector3(0, 5, 0));
-            field.AddMovable(ship);
+            var asteroid = asteroidManager.CreateAsteroid(new Vector3(5,0,0),Vector3.zero, takeFactoryValues:false );
+
+            field.SpawnPlayer();
+            var ship = field.Player;
 
             var newAsteroidPosition = field.NewPositionFor(asteroid);
             Assert.AreEqual(new Vector3(-5, 0, 0), newAsteroidPosition);
 
             var newShipPosition = field.NewPositionFor(ship);
-            Assert.AreEqual(new Vector3(0, -5, 0), newShipPosition);
+            Assert.AreEqual(new Vector3(0, 0, 0), newShipPosition);
         }
 
         [Test]

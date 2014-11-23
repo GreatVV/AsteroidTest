@@ -135,6 +135,11 @@ public class Session : MonoBehaviour
     {
         SaveToPrefs();
 
+        if (UI)
+        {
+            UI.ShowGameOver(false);
+        }
+
         Score = 0;
         HighScore = PlayerPrefs.GetInt(StringConstants.HighScorePref, 0);
         Lifes = GameLogicParameters.StartNumberOfLifes;

@@ -3,7 +3,24 @@ using UnityEngine;
 public class PlayerFactory : ScriptableObject
 {
     public GameObject PlayerPrefab;
-    public static PlayerFactory Instance { get; set; }
+    private static PlayerFactory _instance;
+
+    public static PlayerFactory Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                return CreateInstance<PlayerFactory>();
+            }
+
+            return _instance;
+        }
+        set
+        {
+            _instance = value;
+        }
+    }
 
     public Player CreatePlayer()
     {
