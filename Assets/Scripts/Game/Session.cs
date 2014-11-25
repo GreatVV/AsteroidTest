@@ -116,6 +116,7 @@ public class Session : MonoBehaviour
             {
                 if (UI)
                 {
+                    StopAllCoroutines();
                     SaveToPrefs();
                     UI.ShowGameOver();
                 }

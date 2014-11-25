@@ -7,8 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace UnityTest
 {
-    [CanEditMultipleObjects]
-    [CustomEditor(typeof(TestComponent))]
+    [CanEditMultipleObjects, CustomEditor(typeof (TestComponent))]
     public class TestComponentEditor : Editor
     {
         private SerializedProperty m_ExpectException;
@@ -20,14 +19,36 @@ namespace UnityTest
 
         #region GUI Contens
 
-        private readonly GUIContent m_GUIExpectException = new GUIContent("Expect exception", "Should the test expect an exception");
-        private readonly GUIContent m_GUIExpectExceptionList = new GUIContent("Expected exception list", "A comma separated list of exception types which will not fail the test when thrown");
+        private readonly GUIContent m_GUIExpectException = new GUIContent(
+            "Expect exception",
+            "Should the test expect an exception");
+
+        private readonly GUIContent m_GUIExpectExceptionList = new GUIContent(
+            "Expected exception list",
+            "A comma separated list of exception types which will not fail the test when thrown");
+
         private readonly GUIContent m_GUIIgnore = new GUIContent("Ignore", "Ignore the tests in runs");
-        private readonly GUIContent m_GUIIncludePlatforms = new GUIContent("Included platforms", "Platform on which the test should run");
-        private readonly GUIContent m_GUISuccedOnAssertions = new GUIContent("Succeed on assertions", "Succeed after all assertions are executed");
-        private readonly GUIContent m_GUISucceedWhenExceptionIsThrown = new GUIContent("Succeed when exception is thrown", "Should the test succeed when an expected exception is thrown");
-        private readonly GUIContent m_GUITestName = new GUIContent("Test name", "Name of the test (is equal to the GameObject name)");
-        private readonly GUIContent m_GUITimeout = new GUIContent("Timeout", "Number of seconds after which the test will timeout");
+
+        private readonly GUIContent m_GUIIncludePlatforms = new GUIContent(
+            "Included platforms",
+            "Platform on which the test should run");
+
+        private readonly GUIContent m_GUISuccedOnAssertions = new GUIContent(
+            "Succeed on assertions",
+            "Succeed after all assertions are executed");
+
+        private readonly GUIContent m_GUISucceedWhenExceptionIsThrown =
+            new GUIContent(
+                "Succeed when exception is thrown",
+                "Should the test succeed when an expected exception is thrown");
+
+        private readonly GUIContent m_GUITestName = new GUIContent(
+            "Test name",
+            "Name of the test (is equal to the GameObject name)");
+
+        private readonly GUIContent m_GUITimeout = new GUIContent(
+            "Timeout",
+            "Number of seconds after which the test will timeout");
 
         #endregion
 
@@ -43,7 +64,7 @@ namespace UnityTest
 
         public override void OnInspectorGUI()
         {
-            var component = (TestComponent)target;
+            var component = (TestComponent) target;
 
             if (component.dynamic && GUILayout.Button("Reload dynamic tests"))
             {
@@ -56,8 +77,11 @@ namespace UnityTest
             if (component.IsTestGroup())
             {
                 EditorGUI.BeginChangeCheck();
-                var newGroupName = EditorGUILayout.TextField(m_GUITestName, component.name);
-                if (EditorGUI.EndChangeCheck()) component.name = newGroupName;
+                string newGroupName = EditorGUILayout.TextField(m_GUITestName, component.name);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    component.name = newGroupName;
+                }
 
                 serializedObject.ApplyModifiedProperties();
                 return;
@@ -68,20 +92,28 @@ namespace UnityTest
             EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
 
             EditorGUI.BeginChangeCheck();
-            var newName = EditorGUILayout.TextField(m_GUITestName, component.name);
-            if (EditorGUI.EndChangeCheck()) component.name = newName;
+            string newName = EditorGUILayout.TextField(m_GUITestName, component.name);
+            if (EditorGUI.EndChangeCheck())
+            {
+                component.name = newName;
+            }
 
             if (component.platformsToIgnore == null)
             {
-                component.platformsToIgnore = GetListOfIgnoredPlatforms(Enum.GetNames(typeof(TestComponent.IncludedPlatforms)), (int)component.includedPlatforms);
+                component.platformsToIgnore =
+                    GetListOfIgnoredPlatforms(
+                                              Enum.GetNames(typeof (TestComponent.IncludedPlatforms)),
+                                              (int) component.includedPlatforms);
             }
 
-            var enumList = Enum.GetNames(typeof(RuntimePlatform));
-            var flags = GetFlagList(enumList, component.platformsToIgnore);
+            string[] enumList = Enum.GetNames(typeof (RuntimePlatform));
+            int flags = GetFlagList(enumList, component.platformsToIgnore);
             flags = EditorGUILayout.MaskField(m_GUIIncludePlatforms, flags, enumList, EditorStyles.popup);
-            var newList = GetListOfIgnoredPlatforms(enumList, flags);
+            string[] newList = GetListOfIgnoredPlatforms(enumList, flags);
             if (!component.dynamic)
+            {
                 component.platformsToIgnore = newList;
+            }
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.PropertyField(m_Timeout, m_GUITimeout);
@@ -94,7 +126,10 @@ namespace UnityTest
             EditorGUILayout.PropertyField(m_SucceedWhenExceptionIsThrown, m_GUISucceedWhenExceptionIsThrown);
             EditorGUI.EndDisabledGroup();
 
-            if (!component.dynamic) serializedObject.ApplyModifiedProperties();
+            if (!component.dynamic)
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
         }
 
         private string[] GetListOfIgnoredPlatforms(string[] enumList, int flags)
@@ -102,8 +137,11 @@ namespace UnityTest
             var notSelectedPlatforms = new List<string>();
             for (int i = 0; i < enumList.Length; i++)
             {
-                var sel = (flags & (1 << i)) != 0;
-                if (!sel) notSelectedPlatforms.Add(enumList[i]);
+                bool sel = (flags & (1 << i)) != 0;
+                if (!sel)
+                {
+                    notSelectedPlatforms.Add(enumList[i]);
+                }
             }
             return notSelectedPlatforms.ToArray();
         }
@@ -112,8 +150,12 @@ namespace UnityTest
         {
             int flags = ~0;
             for (int i = 0; i < enumList.Length; i++)
+            {
                 if (platformsToIgnore != null && platformsToIgnore.Any(s => s == enumList[i]))
+                {
                     flags &= ~(1 << i);
+                }
+            }
             return flags;
         }
     }

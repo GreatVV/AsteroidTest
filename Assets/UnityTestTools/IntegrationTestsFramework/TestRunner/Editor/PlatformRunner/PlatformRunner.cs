@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using UnityEditor;
@@ -14,11 +13,11 @@ namespace UnityTest.IntegrationTests
         {
             get
             {
-                var target = EditorPrefs.GetString("ITR-platformRunnerBuildTarget");
+                string target = EditorPrefs.GetString("ITR-platformRunnerBuildTarget");
                 BuildTarget buildTarget;
                 try
                 {
-                    buildTarget = (BuildTarget)Enum.Parse(typeof(BuildTarget), target);
+                    buildTarget = (BuildTarget) Enum.Parse(typeof (BuildTarget), target);
                 }
                 catch
                 {
@@ -26,7 +25,10 @@ namespace UnityTest.IntegrationTests
                 }
                 return buildTarget;
             }
-            set { EditorPrefs.SetString("ITR-platformRunnerBuildTarget", value.ToString()); }
+            set
+            {
+                EditorPrefs.SetString("ITR-platformRunnerBuildTarget", value.ToString());
+            }
         }
 
         [MenuItem("Unity Test Tools/Platform Runner/Run current scene %#&r")]
@@ -39,7 +41,7 @@ namespace UnityTest.IntegrationTests
         [MenuItem("Unity Test Tools/Platform Runner/Run on platform %#r")]
         public static void RunInPlayer()
         {
-            var w = EditorWindow.GetWindow(typeof(PlatformRunnerSettingsWindow));
+            EditorWindow w = EditorWindow.GetWindow(typeof (PlatformRunnerSettingsWindow));
             w.Show();
         }
 
@@ -55,7 +57,7 @@ namespace UnityTest.IntegrationTests
                 {
                     var l = new TcpListener(IPAddress.Any, configuration.port);
                     l.Start();
-                    configuration.port = ((IPEndPoint)l.Server.LocalEndPoint).Port;
+                    configuration.port = ((IPEndPoint) l.Server.LocalEndPoint).Port;
                     l.Stop();
                 }
                 catch (SocketException e)
@@ -66,20 +68,26 @@ namespace UnityTest.IntegrationTests
             }
 
             if (InternalEditorUtility.inBatchMode)
+            {
                 settings.AddConfigurationFile(TestRunnerConfigurator.batchRunFileMarker, "");
+            }
 
             if (configuration.sendResultsOverNetwork)
-                settings.AddConfigurationFile(TestRunnerConfigurator.integrationTestsNetwork,
+            {
+                settings.AddConfigurationFile(
+                                              TestRunnerConfigurator.integrationTestsNetwork,
                                               string.Join("\n", configuration.GetConnectionIPs()));
+            }
 
             settings.ChangeSettingsForIntegrationTests();
 
             AssetDatabase.Refresh();
 
-            var result = BuildPipeline.BuildPlayer(configuration.scenes,
-                                                   configuration.GetTempPath(),
-                                                   configuration.buildTarget,
-                                                   BuildOptions.AutoRunPlayer | BuildOptions.Development);
+            string result = BuildPipeline.BuildPlayer(
+                                                      configuration.scenes,
+                                                      configuration.GetTempPath(),
+                                                      configuration.buildTarget,
+                                                      BuildOptions.AutoRunPlayer | BuildOptions.Development);
 
             settings.RevertSettingsChanges();
             settings.RemoveAllConfigurationFiles();
@@ -89,14 +97,20 @@ namespace UnityTest.IntegrationTests
             if (!string.IsNullOrEmpty(result))
             {
                 if (InternalEditorUtility.inBatchMode)
+                {
                     EditorApplication.Exit(Batch.returnCodeRunError);
+                }
                 return;
             }
 
             if (configuration.sendResultsOverNetwork)
+            {
                 NetworkResultsReceiver.StartReceiver(configuration);
+            }
             else
+            {
                 EditorApplication.Exit(Batch.returnCodeTestsOk);
+            }
         }
 
         private static BuildTarget GetDefaultBuildTarget()

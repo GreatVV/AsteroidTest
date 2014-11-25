@@ -13,20 +13,34 @@ namespace UnityTest
     [Serializable]
     public class AssertionExplorerWindow : EditorWindow
     {
-        private List<AssertionComponent> m_AllAssertions = new List<AssertionComponent>();
-        [SerializeField]
-        private string m_FilterText = "";
-        [SerializeField]
-        private FilterType m_FilterType;
-        [SerializeField]
-        private List<string> m_FoldMarkers = new List<string>();
-        [SerializeField]
-        private GroupByType m_GroupBy;
-        [SerializeField]
-        private Vector2 m_ScrollPosition = Vector2.zero;
-        private DateTime m_NextReload = DateTime.Now;
         [SerializeField]
         private static bool s_ShouldReload;
+
+        private readonly IListRenderer m_GroupByComparerRenderer = new GroupByComparerRenderer();
+        private readonly IListRenderer m_GroupByExecutionMethodRenderer = new GroupByExecutionMethodRenderer();
+        private readonly IListRenderer m_GroupByGoRenderer = new GroupByGoRenderer();
+        private readonly IListRenderer m_GroupByNothingRenderer = new GroupByNothingRenderer();
+        private readonly IListRenderer m_GroupByTestsRenderer = new GroupByTestsRenderer();
+
+        private List<AssertionComponent> m_AllAssertions = new List<AssertionComponent>();
+
+        [SerializeField]
+        private string m_FilterText = "";
+
+        [SerializeField]
+        private FilterType m_FilterType;
+
+        [SerializeField]
+        private List<string> m_FoldMarkers = new List<string>();
+
+        [SerializeField]
+        private GroupByType m_GroupBy;
+
+        private DateTime m_NextReload = DateTime.Now;
+
+        [SerializeField]
+        private Vector2 m_ScrollPosition = Vector2.zero;
+
         [SerializeField]
         private ShowType m_ShowType;
 
@@ -61,7 +75,9 @@ namespace UnityTest
             if (s_ShouldReload && m_NextReload < DateTime.Now)
             {
                 s_ShouldReload = false;
-                m_AllAssertions = new List<AssertionComponent>((AssertionComponent[])Resources.FindObjectsOfTypeAll(typeof(AssertionComponent)));
+                m_AllAssertions =
+                    new List<AssertionComponent>(
+                        (AssertionComponent[]) Resources.FindObjectsOfTypeAll(typeof (AssertionComponent)));
                 Repaint();
             }
         }
@@ -72,19 +88,30 @@ namespace UnityTest
 
             m_ScrollPosition = EditorGUILayout.BeginScrollView(m_ScrollPosition);
             if (m_AllAssertions != null)
+            {
                 GetResultRendere().Render(FilterResults(m_AllAssertions, m_FilterText.ToLower()), m_FoldMarkers);
+            }
             EditorGUILayout.EndScrollView();
         }
 
         private IEnumerable<AssertionComponent> FilterResults(List<AssertionComponent> assertionComponents, string text)
         {
             if (m_ShowType == ShowType.ShowDisabled)
+            {
                 assertionComponents = assertionComponents.Where(c => !c.enabled).ToList();
-            else if (m_ShowType == ShowType.ShowEnabled)
-                assertionComponents = assertionComponents.Where(c => c.enabled).ToList();
+            }
+            else
+            {
+                if (m_ShowType == ShowType.ShowEnabled)
+                {
+                    assertionComponents = assertionComponents.Where(c => c.enabled).ToList();
+                }
+            }
 
             if (string.IsNullOrEmpty(text))
+            {
                 return assertionComponents;
+            }
 
             switch (m_FilterType)
             {
@@ -95,27 +122,24 @@ namespace UnityTest
                 case FilterType.FirstComparedGameObjectPath:
                     return assertionComponents.Where(c => c.Action.thisPropertyPath.ToLower().Contains(text));
                 case FilterType.FirstComparedGameObject:
-                    return assertionComponents.Where(c => c.Action.go != null
-                                                     && c.Action.go.name.ToLower().Contains(text));
+                    return
+                        assertionComponents.Where(c => c.Action.go != null && c.Action.go.name.ToLower().Contains(text));
                 case FilterType.SecondComparedGameObjectPath:
-                    return assertionComponents.Where(c =>
-                                                     c.Action is ComparerBase
-                                                     && (c.Action as ComparerBase).otherPropertyPath.ToLower().Contains(text));
+                    return
+                        assertionComponents.Where(
+                                                  c =>
+                                                  c.Action is ComparerBase &&
+                                                  (c.Action as ComparerBase).otherPropertyPath.ToLower().Contains(text));
                 case FilterType.SecondComparedGameObject:
-                    return assertionComponents.Where(c =>
-                                                     c.Action is ComparerBase
-                                                     && (c.Action as ComparerBase).other != null
-                                                     && (c.Action as ComparerBase).other.name.ToLower().Contains(text));
+                    return
+                        assertionComponents.Where(
+                                                  c =>
+                                                  c.Action is ComparerBase && (c.Action as ComparerBase).other != null &&
+                                                  (c.Action as ComparerBase).other.name.ToLower().Contains(text));
                 default:
                     return assertionComponents;
             }
         }
-
-        private readonly IListRenderer m_GroupByComparerRenderer = new GroupByComparerRenderer();
-        private readonly IListRenderer m_GroupByExecutionMethodRenderer = new GroupByExecutionMethodRenderer();
-        private readonly IListRenderer m_GroupByGoRenderer = new GroupByGoRenderer();
-        private readonly IListRenderer m_GroupByTestsRenderer = new GroupByTestsRenderer();
-        private readonly IListRenderer m_GroupByNothingRenderer = new GroupByNothingRenderer();
 
         private IListRenderer GetResultRendere()
         {
@@ -138,27 +162,36 @@ namespace UnityTest
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Group by", GUILayout.MaxWidth(60));
-            m_GroupBy = (GroupByType)EditorGUILayout.EnumPopup(m_GroupBy, GUILayout.MaxWidth(150));
+            m_GroupBy = (GroupByType) EditorGUILayout.EnumPopup(m_GroupBy, GUILayout.MaxWidth(150));
 
             GUILayout.FlexibleSpace();
 
-            m_ShowType = (ShowType)EditorGUILayout.EnumPopup(m_ShowType, GUILayout.MaxWidth(100));
+            m_ShowType = (ShowType) EditorGUILayout.EnumPopup(m_ShowType, GUILayout.MaxWidth(100));
 
             EditorGUILayout.LabelField("Filter by", GUILayout.MaxWidth(50));
-            m_FilterType = (FilterType)EditorGUILayout.EnumPopup(m_FilterType, GUILayout.MaxWidth(100));
+            m_FilterType = (FilterType) EditorGUILayout.EnumPopup(m_FilterType, GUILayout.MaxWidth(100));
             m_FilterText = EditorGUILayout.TextField(m_FilterText, GUILayout.MaxWidth(100));
             if (GUILayout.Button("Clear", GUILayout.ExpandWidth(false)))
+            {
                 m_FilterText = "";
+            }
             EditorGUILayout.EndHorizontal();
         }
 
         [MenuItem("Unity Test Tools/Assertion Explorer")]
         public static AssertionExplorerWindow ShowWindow()
         {
-            var w = GetWindow(typeof(AssertionExplorerWindow));
+            EditorWindow w = GetWindow(typeof (AssertionExplorerWindow));
             w.Show();
             return w as AssertionExplorerWindow;
         }
+
+        public static void Reload()
+        {
+            s_ShouldReload = true;
+        }
+
+        #region Nested type: FilterType
 
         private enum FilterType
         {
@@ -170,12 +203,9 @@ namespace UnityTest
             AttachedGameObject
         }
 
-        private enum ShowType
-        {
-            ShowAll,
-            ShowEnabled,
-            ShowDisabled
-        }
+        #endregion
+
+        #region Nested type: GroupByType
 
         private enum GroupByType
         {
@@ -186,9 +216,17 @@ namespace UnityTest
             Tests
         }
 
-        public static void Reload()
+        #endregion
+
+        #region Nested type: ShowType
+
+        private enum ShowType
         {
-            s_ShouldReload = true;
+            ShowAll,
+            ShowEnabled,
+            ShowDisabled
         }
+
+        #endregion
     }
 }

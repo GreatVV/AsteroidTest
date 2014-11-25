@@ -12,19 +12,22 @@ namespace UnityTest
 {
     public class NUnitTestEngine : IUnitTestEngine
     {
-        static readonly string[] k_WhitelistedAssemblies =
+        private static readonly string[] k_WhitelistedAssemblies =
         {
             "Assembly-CSharp-Editor",
             "Assembly-Boo-Editor",
             "Assembly-UnityScript-Editor"
         };
+
         private TestSuite m_TestSuite;
+
+        #region IUnitTestEngine Members
 
         public UnitTestRendererLine GetTests(out UnitTestResult[] results, out string[] categories)
         {
             if (m_TestSuite == null)
             {
-                var assemblies = GetAssembliesWithTests().Select(a => a.Location).ToList();
+                List<string> assemblies = GetAssembliesWithTests().Select(a => a.Location).ToList();
                 TestSuite suite = PrepareTestSuite(assemblies);
                 m_TestSuite = suite;
             }
@@ -34,40 +37,87 @@ namespace UnityTest
 
             UnitTestRendererLine lines = null;
             if (m_TestSuite != null)
+            {
                 lines = ParseTestList(m_TestSuite, resultList, categoryList).Single();
+            }
             results = resultList.ToArray();
             categories = categoryList.ToArray();
 
             return lines;
         }
 
-        private UnitTestRendererLine[] ParseTestList(Test test, List<UnitTestResult> results, HashSet<string> categories)
+        public void RunTests(TestFilter filter, ITestRunnerCallback testRunnerEventListener)
         {
-            foreach (string category in test.Categories) categories.Add(category);
+            try
+            {
+                if (testRunnerEventListener != null)
+                {
+                    testRunnerEventListener.RunStarted(m_TestSuite.TestName.FullName, m_TestSuite.TestCount);
+                }
+
+                ExecuteTestSuite(m_TestSuite, testRunnerEventListener, filter);
+
+                if (testRunnerEventListener != null)
+                {
+                    testRunnerEventListener.RunFinished();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                if (testRunnerEventListener != null)
+                {
+                    testRunnerEventListener.RunFinishedException(e);
+                }
+            }
+        }
+
+        #endregion
+
+        private UnitTestRendererLine[] ParseTestList
+            (Test test, List<UnitTestResult> results, HashSet<string> categories)
+        {
+            foreach (string category in test.Categories)
+            {
+                categories.Add(category);
+            }
 
             if (test is TestMethod)
             {
                 var result = new UnitTestResult
-                {
-                    Test = new UnitTestInfo(test as TestMethod)
-                };
+                             {
+                                 Test = new UnitTestInfo(test as TestMethod)
+                             };
 
                 results.Add(result);
-                return new[] { new TestLine(test as TestMethod, result.Id) };
+                return new[]
+                       {
+                           new TestLine(test as TestMethod, result.Id)
+                       };
             }
 
             GroupLine group = null;
             if (test is TestSuite)
+            {
                 group = new GroupLine(test as TestSuite);
+            }
 
-            var namespaceList = new List<UnitTestRendererLine>(new[] {group});
+            var namespaceList = new List<UnitTestRendererLine>(
+                new[]
+                {
+                    group
+                });
 
             foreach (Test result in test.Tests)
             {
                 if (result is NamespaceSuite || test is TestAssembly)
+                {
                     namespaceList.AddRange(ParseTestList(result, results, categories));
+                }
                 else
+                {
                     group.AddChildren(ParseTestList(result, results, categories));
+                }
             }
 
             namespaceList.Sort();
@@ -79,34 +129,20 @@ namespace UnityTest
             RunTests(TestFilter.Empty, testRunnerEventListener);
         }
 
-        public void RunTests(TestFilter filter, ITestRunnerCallback testRunnerEventListener)
-        {
-            try
-            {
-                if (testRunnerEventListener != null)
-                    testRunnerEventListener.RunStarted(m_TestSuite.TestName.FullName, m_TestSuite.TestCount);
-
-                ExecuteTestSuite(m_TestSuite, testRunnerEventListener, filter);
-
-                if (testRunnerEventListener != null)
-                    testRunnerEventListener.RunFinished();
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                if (testRunnerEventListener != null)
-                    testRunnerEventListener.RunFinishedException(e);
-            }
-        }
-
         public static Assembly[] GetAssembliesWithTests()
         {
             var libs = new List<Assembly>();
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (assembly.GetReferencedAssemblies().All(a => a.Name != "nunit.framework")) continue;
-                if (assembly.Location.Replace('\\', '/').StartsWith(Application.dataPath)
-                    || k_WhitelistedAssemblies.Contains(assembly.GetName().Name)) libs.Add(assembly);
+                if (assembly.GetReferencedAssemblies().All(a => a.Name != "nunit.framework"))
+                {
+                    continue;
+                }
+                if (assembly.Location.Replace('\\', '/').StartsWith(Application.dataPath) ||
+                    k_WhitelistedAssemblies.Contains(assembly.GetName().Name))
+                {
+                    libs.Add(assembly);
+                }
             }
             return libs.ToArray();
         }
@@ -125,9 +161,13 @@ namespace UnityTest
         {
             EventListener eventListener;
             if (testRunnerEventListener == null)
+            {
                 eventListener = new NullListener();
+            }
             else
+            {
                 eventListener = new TestRunnerEventListener(testRunnerEventListener);
+            }
             suite.Run(eventListener, GetFilter(filter));
         }
 
@@ -136,13 +176,25 @@ namespace UnityTest
             var nUnitFilter = new AndFilter();
 
             if (filter.names != null && filter.names.Length > 0)
+            {
                 nUnitFilter.Add(new SimpleNameFilter(filter.names));
+            }
             if (filter.categories != null && filter.categories.Length > 0)
+            {
                 nUnitFilter.Add(new CategoryFilter(filter.categories));
+            }
             if (filter.objects != null && filter.objects.Length > 0)
-                nUnitFilter.Add(new OrFilter(filter.objects.Where(o => o is TestName).Select(o => new NameFilter(o as TestName)).ToArray()));
+            {
+                nUnitFilter.Add(
+                                new OrFilter(
+                                    filter.objects.Where(o => o is TestName)
+                                          .Select(o => new NameFilter(o as TestName))
+                                          .ToArray()));
+            }
             return nUnitFilter;
         }
+
+        #region Nested type: TestRunnerEventListener
 
         public class TestRunnerEventListener : EventListener
         {
@@ -152,6 +204,8 @@ namespace UnityTest
             {
                 m_TestRunnerEventListener = testRunnerEventListener;
             }
+
+            #region EventListener Members
 
             public void RunStarted(string name, int testCount)
             {
@@ -179,20 +233,20 @@ namespace UnityTest
             }
 
             public void SuiteStarted(TestName testName)
-            {
-            }
+            {}
 
             public void SuiteFinished(NUnit.Core.TestResult result)
-            {
-            }
+            {}
 
             public void UnhandledException(Exception exception)
-            {
-            }
+            {}
 
             public void TestOutput(TestOutput testOutput)
-            {
-            }
+            {}
+
+            #endregion
         }
+
+        #endregion
     }
 }

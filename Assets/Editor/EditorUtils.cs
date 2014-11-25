@@ -1,21 +1,18 @@
 ﻿using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
 public class EditorUtils
 {
-
     public static void CreateAssetFile<T>() where T : ScriptableObject, new()
     {
-
-        var path = string.Format("Assets/Resources/{0}.asset", typeof(T).Name);
+        string path = string.Format("Assets/Resources/{0}.asset", typeof (T).Name);
         if (Selection.activeObject)
         {
             string selectionPath = AssetDatabase.GetAssetPath(Selection.activeObject); // relative path
             if (Directory.Exists(selectionPath))
             {
-                path = Path.Combine(selectionPath, string.Format("{0}.asset", typeof(T).Name));
+                path = Path.Combine(selectionPath, string.Format("{0}.asset", typeof (T).Name));
             }
         }
 

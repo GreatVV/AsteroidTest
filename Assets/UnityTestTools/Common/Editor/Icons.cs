@@ -9,8 +9,12 @@ namespace UnityTest
 {
     public static class Icons
     {
-        const string k_IconsFolderName = "icons";
-        private static readonly string k_IconsFolderPath = String.Format("UnityTestTools{0}Common{0}Editor{0}{1}", Path.DirectorySeparatorChar, k_IconsFolderName);
+        private const string k_IconsFolderName = "icons";
+
+        private static readonly string k_IconsFolderPath = String.Format(
+                                                                         "UnityTestTools{0}Common{0}Editor{0}{1}",
+                                                                         Path.DirectorySeparatorChar,
+                                                                         k_IconsFolderName);
 
         private static readonly string k_IconsAssetsPath = "";
 
@@ -34,11 +38,18 @@ namespace UnityTest
 
         static Icons()
         {
-            var dirs = Directory.GetDirectories("Assets", k_IconsFolderName, SearchOption.AllDirectories).Where(s => s.EndsWith(k_IconsFolderPath));
+            IEnumerable<string> dirs =
+                Directory.GetDirectories("Assets", k_IconsFolderName, SearchOption.AllDirectories)
+                         .Where(s => s.EndsWith(k_IconsFolderPath));
             if (dirs.Any())
+            {
                 k_IconsAssetsPath = dirs.First();
+            }
             else
-                Debug.LogWarning("The UnityTestTools asset folder path is incorrect. If you relocated the tools please change the path accordingly (Icons.cs).");
+            {
+                Debug.LogWarning(
+                                 "The UnityTestTools asset folder path is incorrect. If you relocated the tools please change the path accordingly (Icons.cs).");
+            }
 
             FailImg = LoadTexture("failed.png");
             IgnoreImg = LoadTexture("ignored.png");
@@ -73,7 +84,11 @@ namespace UnityTest
 
         private static Texture2D LoadTexture(string fileName)
         {
-            return (Texture2D)Resources.LoadAssetAtPath(k_IconsAssetsPath + Path.DirectorySeparatorChar + fileName, typeof(Texture2D));
+            return
+                (Texture2D)
+                Resources.LoadAssetAtPath(
+                                          k_IconsAssetsPath + Path.DirectorySeparatorChar + fileName,
+                                          typeof (Texture2D));
         }
     }
 }

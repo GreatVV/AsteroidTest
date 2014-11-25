@@ -119,4 +119,9 @@ public class Player : MovableBase, ITeleportable
     {
         transform.Rotate(new Vector3(0, 0, timePassed * RotationSpeed));
     }
+
+    public void Rotate(Quaternion rotation, float timePassed)
+    {
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, timePassed * 5);
+    }
 }

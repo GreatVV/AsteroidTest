@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -37,13 +35,16 @@ namespace UnityTest
 
             label = new GUIStyle(EditorStyles.label);
             selectedLabel = new GUIStyle(EditorStyles.label);
-            selectedLabel.active.textColor = selectedLabel.normal.textColor = selectedLabel.onActive.textColor = k_SelectedColor;
+            selectedLabel.active.textColor =
+                selectedLabel.normal.textColor = selectedLabel.onActive.textColor = k_SelectedColor;
 
             foldout = new GUIStyle(EditorStyles.foldout);
             selectedFoldout = new GUIStyle(EditorStyles.foldout);
-            selectedFoldout.onFocused.textColor = selectedFoldout.focused.textColor =
-                                                      selectedFoldout.onActive.textColor = selectedFoldout.active.textColor =
-                                                                                               selectedFoldout.onNormal.textColor = selectedFoldout.normal.textColor = k_SelectedColor;
+            selectedFoldout.onFocused.textColor =
+                selectedFoldout.focused.textColor =
+                selectedFoldout.onActive.textColor =
+                selectedFoldout.active.textColor =
+                selectedFoldout.onNormal.textColor = selectedFoldout.normal.textColor = k_SelectedColor;
         }
     }
 }

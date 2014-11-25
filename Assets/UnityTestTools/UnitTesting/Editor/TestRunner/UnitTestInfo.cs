@@ -1,32 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Core;
-using UnityEngine;
-using Object = System.Object;
 
 namespace UnityTest
 {
     [Serializable]
     public class UnitTestInfo
     {
-        public string ParamName { get; private set; }
-        public string MethodName { get; private set; }
-        public string FullMethodName { get; private set; }
-        public string ClassName { get; private set; }
-        public string FullClassName { get; private set; }
-        public string Namespace { get; private set; }
-        public string FullName { get; private set; }
-        public string[] Categories { get; private set; }
-        public string AssemblyPath { get; private set; }
-        public string Id { get; private set; }
-
         public UnitTestInfo(TestMethod testMethod)
         {
             if (testMethod == null)
+            {
                 throw new ArgumentException();
+            }
 
             MethodName = testMethod.MethodName;
             FullMethodName = testMethod.Method.ToString();
@@ -42,38 +30,61 @@ namespace UnityTest
             AssemblyPath = GetAssemblyPath(testMethod);
         }
 
+        public UnitTestInfo(string id)
+        {
+            Id = id;
+        }
+
+        public string ParamName { get; private set; }
+        public string MethodName { get; private set; }
+        public string FullMethodName { get; private set; }
+        public string ClassName { get; private set; }
+        public string FullClassName { get; private set; }
+        public string Namespace { get; private set; }
+        public string FullName { get; private set; }
+        public string[] Categories { get; private set; }
+        public string AssemblyPath { get; private set; }
+        public string Id { get; private set; }
+
         private string GetAssemblyPath(TestMethod testMethod)
         {
             var parent = testMethod as Test;
-            var assemblyPath = "";
+            string assemblyPath = "";
             while (parent != null)
             {
                 parent = parent.Parent;
-                if (!(parent is TestAssembly)) continue;
-                var path = (parent as TestAssembly).TestName.FullName;
-                if (!File.Exists(path)) continue;
+                if (!(parent is TestAssembly))
+                {
+                    continue;
+                }
+                string path = (parent as TestAssembly).TestName.FullName;
+                if (!File.Exists(path))
+                {
+                    continue;
+                }
                 assemblyPath = path;
                 break;
             }
             return assemblyPath;
         }
 
-        public UnitTestInfo(string id)
-        {
-            Id = id;
-        }
-
         public override bool Equals(Object obj)
         {
-            if (!(obj is UnitTestInfo)) return false;
+            if (!(obj is UnitTestInfo))
+            {
+                return false;
+            }
 
-            var testInfo = (UnitTestInfo)obj;
+            var testInfo = (UnitTestInfo) obj;
             return Id == testInfo.Id;
         }
 
         public static bool operator ==(UnitTestInfo a, UnitTestInfo b)
         {
-            if (((object)a == null) || ((object)b == null)) return false;
+            if (((object) a == null) || ((object) b == null))
+            {
+                return false;
+            }
             return a.Id == b.Id;
         }
 
@@ -87,9 +98,9 @@ namespace UnityTest
             return Id.GetHashCode();
         }
 
-        static string ExtractMethodCallParametersString(string methodFullName)
+        private static string ExtractMethodCallParametersString(string methodFullName)
         {
-            var match = Regex.Match(methodFullName, @"\((.*)\)");
+            Match match = Regex.Match(methodFullName, @"\((.*)\)");
             string result = "";
             if (match.Groups[1].Success)
             {

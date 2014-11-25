@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Core;
@@ -16,22 +15,31 @@ namespace UnityTest
         protected static GUIContent s_GUICollapseAll = new GUIContent("Collapse all");
         private readonly List<UnitTestRendererLine> m_Children = new List<UnitTestRendererLine>();
 
-        public GroupLine(TestSuite suite)
-            : base(suite)
+        public GroupLine(TestSuite suite) : base(suite)
         {
-            if (suite is NamespaceSuite) m_RenderedName = m_FullName;
+            if (suite is NamespaceSuite)
+            {
+                m_RenderedName = m_FullName;
+            }
         }
 
         private bool Folded
         {
-            get { return FoldMarkers.Contains(m_FullName); }
+            get
+            {
+                return FoldMarkers.Contains(m_FullName);
+            }
 
             set
             {
                 if (value)
+                {
                     FoldMarkers.Add(m_FullName);
+                }
                 else
+                {
                     FoldMarkers.RemoveAll(s => s == m_FullName);
+                }
             }
         }
 
@@ -42,11 +50,18 @@ namespace UnityTest
 
         protected internal override void Render(int indend, RenderingOptions options)
         {
-            if (!AnyVisibleChildren(options)) return;
+            if (!AnyVisibleChildren(options))
+            {
+                return;
+            }
             base.Render(indend, options);
             if (!Folded)
-                foreach (var child in m_Children)
+            {
+                foreach (UnitTestRendererLine child in m_Children)
+                {
                     child.Render(indend + 1, options);
+                }
+            }
         }
 
         private bool AnyVisibleChildren(RenderingOptions options)
@@ -61,27 +76,36 @@ namespace UnityTest
 
         protected override void DrawLine(bool isSelected, RenderingOptions options)
         {
-            var resultIcon = GetResult().HasValue ? GuiHelper.GetIconForResult(GetResult().Value) : Icons.UnknownImg;
+            Texture resultIcon = GetResult().HasValue ? GuiHelper.GetIconForResult(GetResult().Value) : Icons.UnknownImg;
 
             var guiContent = new GUIContent(m_RenderedName, resultIcon, m_FullName);
 
-            var rect = GUILayoutUtility.GetRect(guiContent, Styles.foldout, GUILayout.MaxHeight(16));
+            Rect rect = GUILayoutUtility.GetRect(guiContent, Styles.foldout, GUILayout.MaxHeight(16));
 
             OnLeftMouseButtonClick(rect);
             OnContextClick(rect);
 
             EditorGUI.BeginChangeCheck();
-            var expanded = !EditorGUI.Foldout(rect, !Folded, guiContent, false, isSelected ? Styles.selectedFoldout : Styles.foldout);
-            if (EditorGUI.EndChangeCheck()) Folded = expanded;
+            bool expanded =
+                !EditorGUI.Foldout(
+                                   rect,
+                                   !Folded,
+                                   guiContent,
+                                   false,
+                                   isSelected ? Styles.selectedFoldout : Styles.foldout);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Folded = expanded;
+            }
         }
 
-        protected internal override TestResultState ? GetResult()
+        protected internal override TestResultState? GetResult()
         {
             TestResultState? tempResult = null;
 
-            foreach (var child in m_Children)
+            foreach (UnitTestRendererLine child in m_Children)
             {
-                var childResultState = child.GetResult();
+                TestResultState? childResultState = child.GetResult();
 
                 if (childResultState == TestResultState.Failure || childResultState == TestResultState.Error)
                 {
@@ -89,18 +113,29 @@ namespace UnityTest
                     break;
                 }
                 if (childResultState == TestResultState.Success)
+                {
                     tempResult = TestResultState.Success;
-                else if (childResultState == TestResultState.Ignored)
-                    tempResult = TestResultState.Ignored;
+                }
+                else
+                {
+                    if (childResultState == TestResultState.Ignored)
+                    {
+                        tempResult = TestResultState.Ignored;
+                    }
+                }
             }
-            if (tempResult.HasValue) return tempResult.Value;
+            if (tempResult.HasValue)
+            {
+                return tempResult.Value;
+            }
 
             return null;
         }
 
         private void OnLeftMouseButtonClick(Rect rect)
         {
-            if (rect.Contains(Event.current.mousePosition) && Event.current.type == EventType.mouseDown && Event.current.button == 0)
+            if (rect.Contains(Event.current.mousePosition) && Event.current.type == EventType.mouseDown &&
+                Event.current.button == 0)
             {
                 OnSelect();
             }
@@ -116,30 +151,33 @@ namespace UnityTest
 
         private void PrintGroupContextMenu()
         {
-            var multilineSelection = SelectedLines.Count() > 1;
+            bool multilineSelection = SelectedLines.Count() > 1;
             var m = new GenericMenu();
             if (multilineSelection)
             {
-                m.AddItem(s_GUIRunSelected,
+                m.AddItem(
+                          s_GUIRunSelected,
                           false,
                           data => RunTests(SelectedLines.Select(line => line.m_Test.TestName).ToArray()),
                           "");
             }
             if (!string.IsNullOrEmpty(m_FullName))
             {
-                m.AddItem(s_GUIRun,
+                m.AddItem(
+                          s_GUIRun,
                           false,
-                          data => RunTests(new[] { m_Test.TestName }),
+                          data => RunTests(
+                                           new[]
+                                           {
+                                               m_Test.TestName
+                                           }),
                           "");
             }
             if (!multilineSelection)
             {
                 m.AddSeparator("");
 
-                m.AddItem(Folded ? s_GUIExpandAll : s_GUICollapseAll,
-                          false,
-                          data => ExpandOrCollapseAll(Folded),
-                          "");
+                m.AddItem(Folded ? s_GUIExpandAll : s_GUICollapseAll, false, data => ExpandOrCollapseAll(Folded), "");
             }
             m.ShowAsContext();
         }
@@ -147,9 +185,12 @@ namespace UnityTest
         private void ExpandOrCollapseAll(bool expand)
         {
             Folded = !expand;
-            foreach (var child in m_Children)
+            foreach (UnitTestRendererLine child in m_Children)
             {
-                if (child is GroupLine) (child as GroupLine).ExpandOrCollapseAll(expand);
+                if (child is GroupLine)
+                {
+                    (child as GroupLine).ExpandOrCollapseAll(expand);
+                }
             }
         }
     }

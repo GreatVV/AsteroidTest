@@ -10,15 +10,15 @@ using UnityEngine;
 [Serializable]
 public class PlatformRunnerConfiguration
 {
-    public string[] scenes = new string[0];
     public BuildTarget buildTarget;
-    public bool runInEditor;
+    public List<string> ipList;
+    public int port;
     public string projectName = EditorApplication.currentScene;
 
     public string resultsDir = null;
+    public bool runInEditor;
+    public string[] scenes = new string[0];
     public bool sendResultsOverNetwork;
-    public List<string> ipList;
-    public int port;
 
     public PlatformRunnerConfiguration(BuildTarget buildTarget)
     {
@@ -26,17 +26,17 @@ public class PlatformRunnerConfiguration
         projectName = EditorApplication.currentScene;
     }
 
-    public PlatformRunnerConfiguration()
-        : this(BuildTarget.StandaloneWindows)
-    {
-    }
+    public PlatformRunnerConfiguration() : this(BuildTarget.StandaloneWindows)
+    {}
 
     public string GetTempPath()
     {
         if (string.IsNullOrEmpty(projectName))
+        {
             projectName = Path.GetTempFileName();
+        }
 
-        var path = Path.Combine("Temp", projectName);
+        string path = Path.Combine("Temp", projectName);
         switch (buildTarget)
         {
             case BuildTarget.StandaloneWindows:
@@ -48,7 +48,9 @@ public class PlatformRunnerConfiguration
                 return path + ".apk";
             default:
                 if (buildTarget.ToString() == "BlackBerry" || buildTarget.ToString() == "BB10")
+                {
                     return path + ".bar";
+                }
                 return path;
         }
     }
@@ -60,12 +62,12 @@ public class PlatformRunnerConfiguration
 
     public static int TryToGetFreePort()
     {
-        var port = -1;
+        int port = -1;
         try
         {
             var l = new TcpListener(IPAddress.Any, 0);
             l.Start();
-            port = ((IPEndPoint)l.Server.LocalEndPoint).Port;
+            port = ((IPEndPoint) l.Server.LocalEndPoint).Port;
             l.Stop();
         }
         catch (SocketException e)

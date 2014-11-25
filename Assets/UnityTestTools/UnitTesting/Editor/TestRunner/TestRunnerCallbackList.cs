@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace UnityTest.UnitTestRunner
 {
@@ -8,9 +7,11 @@ namespace UnityTest.UnitTestRunner
     {
         private readonly List<ITestRunnerCallback> m_CallbackList = new List<ITestRunnerCallback>();
 
+        #region ITestRunnerCallback Members
+
         public void TestStarted(string fullName)
         {
-            foreach (var unitTestRunnerCallback in m_CallbackList)
+            foreach (ITestRunnerCallback unitTestRunnerCallback in m_CallbackList)
             {
                 unitTestRunnerCallback.TestStarted(fullName);
             }
@@ -18,7 +19,7 @@ namespace UnityTest.UnitTestRunner
 
         public void TestFinished(ITestResult fullName)
         {
-            foreach (var unitTestRunnerCallback in m_CallbackList)
+            foreach (ITestRunnerCallback unitTestRunnerCallback in m_CallbackList)
             {
                 unitTestRunnerCallback.TestFinished(fullName);
             }
@@ -26,16 +27,15 @@ namespace UnityTest.UnitTestRunner
 
         public void RunStarted(string suiteName, int testCount)
         {
-            foreach (var unitTestRunnerCallback in m_CallbackList)
+            foreach (ITestRunnerCallback unitTestRunnerCallback in m_CallbackList)
             {
-                unitTestRunnerCallback.RunStarted(suiteName,
-                                                  testCount);
+                unitTestRunnerCallback.RunStarted(suiteName, testCount);
             }
         }
 
         public void RunFinished()
         {
-            foreach (var unitTestRunnerCallback in m_CallbackList)
+            foreach (ITestRunnerCallback unitTestRunnerCallback in m_CallbackList)
             {
                 unitTestRunnerCallback.RunFinished();
             }
@@ -43,11 +43,13 @@ namespace UnityTest.UnitTestRunner
 
         public void RunFinishedException(Exception exception)
         {
-            foreach (var unitTestRunnerCallback in m_CallbackList)
+            foreach (ITestRunnerCallback unitTestRunnerCallback in m_CallbackList)
             {
                 unitTestRunnerCallback.RunFinishedException(exception);
             }
         }
+
+        #endregion
 
         public void Add(ITestRunnerCallback callback)
         {

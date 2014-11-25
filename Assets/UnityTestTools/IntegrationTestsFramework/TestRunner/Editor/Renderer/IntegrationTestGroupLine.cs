@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -6,64 +5,99 @@ using UnityEngine;
 
 namespace UnityTest
 {
-    class IntegrationTestGroupLine : IntegrationTestRendererBase
+    internal class IntegrationTestGroupLine : IntegrationTestRendererBase
     {
         public static List<GameObject> FoldMarkers;
         private IntegrationTestRendererBase[] m_Children;
 
         public IntegrationTestGroupLine(GameObject gameObject) : base(gameObject)
+        {}
+
+        private bool Folded
         {
+            get
+            {
+                return FoldMarkers.Contains(m_GameObject);
+            }
+
+            set
+            {
+                if (value)
+                {
+                    FoldMarkers.Add(m_GameObject);
+                }
+                else
+                {
+                    FoldMarkers.RemoveAll(s => s == m_GameObject);
+                }
+            }
         }
 
-        protected internal override void DrawLine(Rect rect, GUIContent label, bool isSelected, RenderingOptions options)
+        protected internal override void DrawLine
+            (Rect rect, GUIContent label, bool isSelected, RenderingOptions options)
         {
             EditorGUILayout.BeginHorizontal();
 
             EditorGUI.BeginChangeCheck();
-            var isClassFolded = !EditorGUI.Foldout(rect, !Folded, label, isSelected ? Styles.selectedFoldout : Styles.foldout);
-            if (EditorGUI.EndChangeCheck()) Folded = isClassFolded;
+            bool isClassFolded =
+                !EditorGUI.Foldout(rect, !Folded, label, isSelected ? Styles.selectedFoldout : Styles.foldout);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Folded = isClassFolded;
+            }
 
             EditorGUILayout.EndHorizontal();
-        }
-
-        private bool Folded
-        {
-            get { return FoldMarkers.Contains(m_GameObject); }
-
-            set
-            {
-                if (value) FoldMarkers.Add(m_GameObject);
-                else FoldMarkers.RemoveAll(s => s == m_GameObject);
-            }
         }
 
         protected internal override void Render(int indend, RenderingOptions options)
         {
             base.Render(indend, options);
             if (!Folded)
-                foreach (var child in m_Children)
+            {
+                foreach (IntegrationTestRendererBase child in m_Children)
+                {
                     child.Render(indend + 1, options);
+                }
+            }
         }
 
         protected internal override TestResult.ResultType GetResult()
         {
             bool ignored = false;
             bool success = false;
-            foreach (var child in m_Children)
+            foreach (IntegrationTestRendererBase child in m_Children)
             {
-                var result = child.GetResult();
+                TestResult.ResultType result = child.GetResult();
 
-                if (result == TestResult.ResultType.Failed || result == TestResult.ResultType.FailedException || result == TestResult.ResultType.Timeout)
+                if (result == TestResult.ResultType.Failed || result == TestResult.ResultType.FailedException ||
+                    result == TestResult.ResultType.Timeout)
+                {
                     return TestResult.ResultType.Failed;
+                }
                 if (result == TestResult.ResultType.Success)
+                {
                     success = true;
-                else if (result == TestResult.ResultType.Ignored)
-                    ignored = true;
+                }
                 else
-                    ignored = false;
+                {
+                    if (result == TestResult.ResultType.Ignored)
+                    {
+                        ignored = true;
+                    }
+                    else
+                    {
+                        ignored = false;
+                    }
+                }
             }
-            if (success) return TestResult.ResultType.Success;
-            if (ignored) return TestResult.ResultType.Ignored;
+            if (success)
+            {
+                return TestResult.ResultType.Success;
+            }
+            if (ignored)
+            {
+                return TestResult.ResultType.Ignored;
+            }
             return TestResult.ResultType.NotRun;
         }
 
@@ -75,8 +109,10 @@ namespace UnityTest
         public override bool SetCurrentTest(TestComponent tc)
         {
             m_IsRunning = false;
-            foreach (var child in m_Children)
+            foreach (IntegrationTestRendererBase child in m_Children)
+            {
                 m_IsRunning |= child.SetCurrentTest(tc);
+            }
             return m_IsRunning;
         }
 

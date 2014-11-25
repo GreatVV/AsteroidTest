@@ -19,10 +19,10 @@ namespace UnityTest
         protected static GUIContent s_GUIRun = new GUIContent("Run");
         protected static GUIContent s_GUITimeoutIcon = new GUIContent(Icons.StopwatchImg, "Timeout");
 
-        protected string m_UniqueId;
         protected internal string m_FullName;
         protected string m_RenderedName;
         protected internal Test m_Test;
+        protected string m_UniqueId;
 
         protected UnitTestRendererLine(Test test)
         {
@@ -33,10 +33,14 @@ namespace UnityTest
             m_Test = test;
         }
 
+        #region IComparable<UnitTestRendererLine> Members
+
         public int CompareTo(UnitTestRendererLine other)
         {
             return m_UniqueId.CompareTo(other.m_UniqueId);
         }
+
+        #endregion
 
         public bool Render(RenderingOptions options)
         {
@@ -57,32 +61,51 @@ namespace UnityTest
 
         protected void OnSelect()
         {
-            if (!Event.current.control) SelectedLines.Clear();
+            if (!Event.current.control)
+            {
+                SelectedLines.Clear();
+            }
 
             if (Event.current.control && SelectedLines.Contains(this))
+            {
                 SelectedLines.Remove(this);
+            }
             else
+            {
                 SelectedLines.Add(this);
+            }
             s_Refresh = true;
         }
 
         protected abstract void DrawLine(bool isSelected, RenderingOptions options);
-        protected internal abstract TestResultState ? GetResult();
+        protected internal abstract TestResultState? GetResult();
         protected internal abstract bool IsVisible(RenderingOptions options);
 
         public void RunTests(object[] testObjectsList)
         {
-            RunTest(new TestFilter { objects = testObjectsList });
+            RunTest(
+                    new TestFilter
+                    {
+                        objects = testObjectsList
+                    });
         }
 
         public void RunTests(string[] testList)
         {
-            RunTest(new TestFilter {names = testList});
+            RunTest(
+                    new TestFilter
+                    {
+                        names = testList
+                    });
         }
 
         public void RunSelectedTests()
         {
-            RunTest(new TestFilter { objects = SelectedLines.Select(line => line.m_Test.TestName).ToArray() });
+            RunTest(
+                    new TestFilter
+                    {
+                        objects = SelectedLines.Select(line => line.m_Test.TestName).ToArray()
+                    });
         }
 
         public virtual string GetResultText()

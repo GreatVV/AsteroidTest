@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace UnityTest
 {
-    class IntegrationTestLine : IntegrationTestRendererBase
+    internal class IntegrationTestLine : IntegrationTestRendererBase
     {
         public static List<TestResult> Results;
         protected TestResult m_Result;
@@ -15,7 +14,8 @@ namespace UnityTest
             m_Result = testResult;
         }
 
-        protected internal override void DrawLine(Rect rect, GUIContent label, bool isSelected, RenderingOptions options)
+        protected internal override void DrawLine
+            (Rect rect, GUIContent label, bool isSelected, RenderingOptions options)
         {
             EditorGUILayout.BeginHorizontal();
             rect.x += 10;
@@ -35,17 +35,36 @@ namespace UnityTest
 
         protected internal override TestResult.ResultType GetResult()
         {
-            if (!m_Result.Executed && test.ignored) return TestResult.ResultType.Ignored;
+            if (!m_Result.Executed && test.ignored)
+            {
+                return TestResult.ResultType.Ignored;
+            }
             return m_Result.resultType;
         }
 
         protected internal override bool IsVisible(RenderingOptions options)
         {
-            if (!string.IsNullOrEmpty(options.nameFilter) && !m_GameObject.name.ToLower().Contains(options.nameFilter.ToLower())) return false;
-            if (!options.showSucceeded && m_Result.IsSuccess) return false;
-            if (!options.showFailed && m_Result.IsFailure) return false;
-            if (!options.showNotRunned && !m_Result.Executed) return false;
-            if (!options.showIgnored && test.ignored) return false;
+            if (!string.IsNullOrEmpty(options.nameFilter) &&
+                !m_GameObject.name.ToLower().Contains(options.nameFilter.ToLower()))
+            {
+                return false;
+            }
+            if (!options.showSucceeded && m_Result.IsSuccess)
+            {
+                return false;
+            }
+            if (!options.showFailed && m_Result.IsFailure)
+            {
+                return false;
+            }
+            if (!options.showNotRunned && !m_Result.Executed)
+            {
+                return false;
+            }
+            if (!options.showIgnored && test.ignored)
+            {
+                return false;
+            }
             return true;
         }
 

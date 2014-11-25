@@ -10,10 +10,10 @@ namespace UnityTest
 {
     public static partial class Batch
     {
-        const string k_ResultFilePathParam = "-resultFilePath=";
-        const string k_TestFilterParam = "-filter=";
-        const string k_CategoryParam = "-categories=";
-        const string k_DefaultResultFileName = "UnitTestResults.xml";
+        private const string k_ResultFilePathParam = "-resultFilePath=";
+        private const string k_TestFilterParam = "-filter=";
+        private const string k_CategoryParam = "-categories=";
+        private const string k_DefaultResultFileName = "UnitTestResults.xml";
 
         public static int returnCodeTestsOk = 0;
         public static int returnCodeTestsFailed = 2;
@@ -21,10 +21,12 @@ namespace UnityTest
 
         public static void RunUnitTests()
         {
-            var filter = GetTestFilter();
-            var resultFilePath = GetParameterArgument(k_ResultFilePathParam) ?? Directory.GetCurrentDirectory();
+            TestFilter filter = GetTestFilter();
+            string resultFilePath = GetParameterArgument(k_ResultFilePathParam) ?? Directory.GetCurrentDirectory();
             if (Directory.Exists(resultFilePath))
+            {
                 resultFilePath = Path.Combine(resultFilePath, k_DefaultResultFileName);
+            }
             EditorApplication.NewScene();
             var engine = new NUnitTestEngine();
             UnitTestResult[] results;
@@ -35,26 +37,29 @@ namespace UnityTest
 
         private static TestFilter GetTestFilter()
         {
-            var testFilterArg = GetParameterArgumentArray(k_TestFilterParam);
-            var testCategoryArg = GetParameterArgumentArray(k_CategoryParam);
+            string[] testFilterArg = GetParameterArgumentArray(k_TestFilterParam);
+            string[] testCategoryArg = GetParameterArgumentArray(k_CategoryParam);
             var filter = new TestFilter
-            {
-                names = testFilterArg,
-                categories = testCategoryArg
-            };
+                         {
+                             names = testFilterArg,
+                             categories = testCategoryArg
+                         };
             return filter;
         }
 
         private static string[] GetParameterArgumentArray(string parameterName)
         {
-            var arg = GetParameterArgument(parameterName);
-            if (string.IsNullOrEmpty(arg)) return null;
+            string arg = GetParameterArgument(parameterName);
+            if (string.IsNullOrEmpty(arg))
+            {
+                return null;
+            }
             return arg.Split(',').Select(s => s.Trim()).ToArray();
         }
 
         private static string GetParameterArgument(string parameterName)
         {
-            foreach (var arg in Environment.GetCommandLineArgs())
+            foreach (string arg in Environment.GetCommandLineArgs())
             {
                 if (arg.ToLower().StartsWith(parameterName.ToLower()))
                 {
@@ -63,6 +68,8 @@ namespace UnityTest
             }
             return null;
         }
+
+        #region Nested type: TestRunnerEventListener
 
         private class TestRunnerEventListener : ITestRunnerCallback
         {
@@ -75,6 +82,8 @@ namespace UnityTest
                 m_Results = resultList;
             }
 
+            #region ITestRunnerCallback Members
+
             public void TestFinished(ITestResult test)
             {
                 m_Results.Single(r => r.Id == test.Id).Update(test, false);
@@ -82,41 +91,49 @@ namespace UnityTest
 
             public void RunFinished()
             {
-                var resultDestiantion = Application.dataPath;
+                string resultDestiantion = Application.dataPath;
                 if (!string.IsNullOrEmpty(m_ResultFilePath))
+                {
                     resultDestiantion = m_ResultFilePath;
-                var fileName = Path.GetFileName(resultDestiantion);
+                }
+                string fileName = Path.GetFileName(resultDestiantion);
                 if (!string.IsNullOrEmpty(fileName))
+                {
                     resultDestiantion = resultDestiantion.Substring(0, resultDestiantion.Length - fileName.Length);
+                }
                 else
+                {
                     fileName = "UnitTestResults.xml";
+                }
 #if !UNITY_METRO
                 var resultWriter = new XmlResultWriter("Unit Tests", "Editor", m_Results.ToArray());
                 resultWriter.WriteToFile(resultDestiantion, fileName);
 #endif
-                var executed = m_Results.Where(result => result.Executed);
+                IEnumerable<UnitTestResult> executed = m_Results.Where(result => result.Executed);
                 if (!executed.Any())
                 {
                     EditorApplication.Exit(returnCodeRunError);
                     return;
                 }
-                var failed = executed.Where(result => !result.IsSuccess);
+                IEnumerable<UnitTestResult> failed = executed.Where(result => !result.IsSuccess);
                 EditorApplication.Exit(failed.Any() ? returnCodeTestsFailed : returnCodeTestsOk);
             }
 
             public void TestStarted(string fullName)
-            {
-            }
+            {}
 
             public void RunStarted(string suiteName, int testCount)
-            {
-            }
+            {}
 
             public void RunFinishedException(Exception exception)
             {
                 EditorApplication.Exit(returnCodeRunError);
                 throw exception;
             }
+
+            #endregion
         }
+
+        #endregion
     }
 }

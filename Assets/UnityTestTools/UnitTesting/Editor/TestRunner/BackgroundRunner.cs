@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,13 +9,15 @@ namespace UnityTest
         static UnitTestView()
         {
             if (s_Instance != null && s_Instance.m_Settings.runOnRecompilation)
+            {
                 EnableBackgroundRunner(true);
+            }
         }
 
         #region Background runner
 
+        private const string k_UttRecompile = "UTT-recompile";
         private static float s_NextCheck;
-        const string k_UttRecompile = "UTT-recompile";
 
         public static void EnableBackgroundRunner(bool enable)
         {
@@ -32,8 +32,14 @@ namespace UnityTest
 
         private static void BackgroudRunner()
         {
-            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
-            if (!s_Instance.m_Settings.runOnRecompilation) EnableBackgroundRunner(false);
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+            if (!s_Instance.m_Settings.runOnRecompilation)
+            {
+                EnableBackgroundRunner(false);
+            }
             if (EditorApplication.isCompiling)
             {
                 EditorPrefs.SetString(k_UttRecompile, Application.dataPath);
@@ -41,13 +47,16 @@ namespace UnityTest
                 return;
             }
 
-            var t = Time.realtimeSinceStartup;
-            if (t < s_NextCheck) return;
+            float t = Time.realtimeSinceStartup;
+            if (t < s_NextCheck)
+            {
+                return;
+            }
             s_NextCheck = t + 0.5f;
 
             if (EditorPrefs.HasKey(k_UttRecompile))
             {
-                var recompile = EditorPrefs.GetString(k_UttRecompile);
+                string recompile = EditorPrefs.GetString(k_UttRecompile);
                 if (recompile == Application.dataPath)
                 {
                     s_Instance.RunTests();
@@ -57,6 +66,7 @@ namespace UnityTest
                 s_NextCheck = 0;
             }
         }
+
         #endregion
     }
 }

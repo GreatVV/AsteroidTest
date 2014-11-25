@@ -16,25 +16,26 @@ namespace UnityTest
     {
         public static NetworkResultsReceiver Instance = null;
 
-        private string m_StatusLabel;
-        private TcpListener m_Listener;
-
         [SerializeField]
         private PlatformRunnerConfiguration m_Configuration;
+
+        private TcpListener m_Listener;
+        private string m_StatusLabel;
 
         private List<ITestResult> m_TestResults = new List<ITestResult>();
 
         #region steering variables
-        private bool m_RunFinished;
-        private bool m_Repaint;
 
-        private TimeSpan m_TestTimeout = TimeSpan.Zero;
+        private readonly TimeSpan m_InitialConnectionTimeout = TimeSpan.FromSeconds(300);
+        public TimeSpan ReceiveMessageTimeout = TimeSpan.FromSeconds(30);
         private DateTime m_LastMessageReceived;
+        private bool m_Repaint;
+        private bool m_RunFinished;
         private bool m_Running;
 
-        public TimeSpan ReceiveMessageTimeout = TimeSpan.FromSeconds(30);
-        private readonly TimeSpan m_InitialConnectionTimeout = TimeSpan.FromSeconds(300);
         private bool m_TestFailed;
+        private TimeSpan m_TestTimeout = TimeSpan.Zero;
+
         #endregion
 
         private void AcceptCallback(TcpClient client)
@@ -44,10 +45,10 @@ namespace UnityTest
             try
             {
                 m_LastMessageReceived = DateTime.Now;
-                using (var stream = client.GetStream())
+                using (NetworkStream stream = client.GetStream())
                 {
                     var bf = new BinaryFormatter();
-                    dto = (ResultDTO)bf.Deserialize(stream);
+                    dto = (ResultDTO) bf.Deserialize(stream);
                     stream.Close();
                 }
                 client.Close();
@@ -73,8 +74,11 @@ namespace UnityTest
                 case ResultDTO.MessageType.TestFinished:
                     m_TestResults.Add(dto.testResult);
                     m_TestTimeout = TimeSpan.Zero;
-                    if (dto.testResult.Executed && dto.testResult.ResultState != TestResultState.Ignored && !dto.testResult.IsSuccess)
+                    if (dto.testResult.Executed && dto.testResult.ResultState != TestResultState.Ignored &&
+                        !dto.testResult.IsSuccess)
+                    {
                         m_TestFailed = true;
+                    }
                     break;
                 case ResultDTO.MessageType.RunStarted:
                     m_TestResults = new List<ITestResult>();
@@ -84,11 +88,13 @@ namespace UnityTest
                     WriteResultsToLog(dto, m_TestResults);
                     if (!string.IsNullOrEmpty(m_Configuration.resultsDir))
                     {
-                        var platform = m_Configuration.runInEditor ? "Editor" : m_Configuration.buildTarget.ToString();
+                        string platform = m_Configuration.runInEditor
+                                              ? "Editor"
+                                              : m_Configuration.buildTarget.ToString();
                         var resultWriter = new XmlResultWriter(dto.loadedLevelName, platform, m_TestResults.ToArray());
                         try
                         {
-                            var filePath = Path.Combine(m_Configuration.resultsDir, dto.loadedLevelName + ".xml");
+                            string filePath = Path.Combine(m_Configuration.resultsDir, dto.loadedLevelName + ".xml");
                             File.WriteAllText(filePath, resultWriter.GetTestResult());
                         }
                         catch (Exception e)
@@ -110,22 +116,29 @@ namespace UnityTest
         private void WriteResultsToLog(ResultDTO dto, List<ITestResult> list)
         {
             string result = "Run finished for: " + dto.loadedLevelName;
-            var failCount = list.Count(t => t.Executed && !t.IsSuccess);
+            int failCount = list.Count(t => t.Executed && !t.IsSuccess);
             if (failCount == 0)
+            {
                 result += "\nAll tests passed";
+            }
             else
+            {
                 result += "\n" + failCount + " tests failed";
+            }
 
             if (failCount == 0)
+            {
                 Debug.Log(result);
+            }
             else
+            {
                 Debug.LogWarning(result);
+            }
         }
 
         public void Update()
         {
-            if (EditorApplication.isCompiling
-                && m_Listener != null)
+            if (EditorApplication.isCompiling && m_Listener != null)
             {
                 m_Running = false;
                 m_Listener.Stop();
@@ -138,7 +151,7 @@ namespace UnityTest
                 {
                     if (m_Listener != null && m_Listener.Pending())
                     {
-                        using (var client = m_Listener.AcceptTcpClient())
+                        using (TcpClient client = m_Listener.AcceptTcpClient())
                         {
                             AcceptCallback(client);
                             client.Close();
@@ -155,8 +168,10 @@ namespace UnityTest
 
             if (m_Running)
             {
-                var adjustedtestTimeout =  m_TestTimeout.Add(m_TestTimeout);
-                var timeout = ReceiveMessageTimeout > adjustedtestTimeout ? ReceiveMessageTimeout : adjustedtestTimeout;
+                TimeSpan adjustedtestTimeout = m_TestTimeout.Add(m_TestTimeout);
+                TimeSpan timeout = ReceiveMessageTimeout > adjustedtestTimeout
+                                       ? ReceiveMessageTimeout
+                                       : adjustedtestTimeout;
                 if ((DateTime.Now - m_LastMessageReceived) > timeout)
                 {
                     Debug.LogError("Timeout when waiting for test results");
@@ -166,10 +181,15 @@ namespace UnityTest
             if (m_RunFinished)
             {
                 if (InternalEditorUtility.inBatchMode)
+                {
                     EditorApplication.Exit(m_TestFailed ? Batch.returnCodeTestsFailed : Batch.returnCodeTestsOk);
+                }
                 Close();
             }
-            if (m_Repaint) Repaint();
+            if (m_Repaint)
+            {
+                Repaint();
+            }
         }
 
         public void OnEnable()
@@ -179,17 +199,22 @@ namespace UnityTest
             title = "Test run monitor";
             Instance = this;
             m_StatusLabel = "Initializing...";
-            if (EditorApplication.isCompiling) return;
+            if (EditorApplication.isCompiling)
+            {
+                return;
+            }
             EnableServer();
         }
 
         private void EnableServer()
         {
-            var ipAddress = IPAddress.Any;
+            IPAddress ipAddress = IPAddress.Any;
             if (m_Configuration != null && m_Configuration.ipList != null && m_Configuration.ipList.Count == 1)
+            {
                 ipAddress = IPAddress.Parse(m_Configuration.ipList.Single());
+            }
 
-            var ipAddStr = Equals(ipAddress, IPAddress.Any) ? "[All interfaces]" : ipAddress.ToString();
+            string ipAddStr = Equals(ipAddress, IPAddress.Any) ? "[All interfaces]" : ipAddress.ToString();
             if (m_Configuration != null)
             {
                 m_Listener = new TcpListener(ipAddress, m_Configuration.port);
@@ -214,7 +239,9 @@ namespace UnityTest
         {
             Instance = null;
             if (m_Listener != null)
+            {
                 m_Listener.Stop();
+            }
         }
 
         public void OnGUI()
@@ -226,13 +253,15 @@ namespace UnityTest
             {
                 StopReceiver();
                 if (InternalEditorUtility.inBatchMode)
+                {
                     EditorApplication.Exit(Batch.returnCodeRunError);
+                }
             }
         }
 
         public static void StartReceiver(PlatformRunnerConfiguration configuration)
         {
-            var w = (NetworkResultsReceiver)GetWindow(typeof(NetworkResultsReceiver), false);
+            var w = (NetworkResultsReceiver) GetWindow(typeof (NetworkResultsReceiver), false);
             w.SetConfiguration(configuration);
             w.Show(true);
         }
@@ -244,7 +273,10 @@ namespace UnityTest
 
         public static void StopReceiver()
         {
-            if (Instance == null) return;
+            if (Instance == null)
+            {
+                return;
+            }
             Instance.Close();
         }
     }

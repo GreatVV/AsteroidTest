@@ -21,7 +21,7 @@ public class UfoTest
     [Test]
     public void UfoBulletTest()
     {
-        var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
+        var field = new GameObject("field", typeof (Field)).GetComponent<Field>();
 
         Assert.AreEqual(0, field.AllMovableObjects.Count);
 
@@ -34,7 +34,7 @@ public class UfoTest
 
         ufo.TryShoot();
 
-        var bullet = field.AllMovableObjects.First(x=>x is Bullet) as Bullet;
+        var bullet = field.AllMovableObjects.First(x => x is Bullet) as Bullet;
         Assert.IsNotNull(bullet);
         Assert.AreSame(ufo, bullet.Owner);
         Assert.AreEqual(2, field.AllMovableObjects.Count);
@@ -57,16 +57,16 @@ public class UfoTest
     [Test]
     public void WeaponTest()
     {
-        var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
+        var field = new GameObject("field", typeof (Field)).GetComponent<Field>();
         field.SpawnPlayer();
 
-        var weapon = field.Player.Weapons.First();
+        Weapon weapon = field.Player.Weapons.First();
 
-        var targetBulletSpeed = 15;
+        int targetBulletSpeed = 15;
 
         weapon.BulletSpeed = targetBulletSpeed;
 
-        var bullet = weapon.Shoot();
+        Bullet bullet = weapon.Shoot();
 
         Assert.AreEqual(targetBulletSpeed, bullet.Speed.magnitude);
     }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace UnityTest
 {
     public static class NUnitExtensions
@@ -11,7 +7,7 @@ namespace UnityTest
             return new UnitTestResult
                    {
                        Executed = result.Executed,
-                       ResultState = (TestResultState)result.ResultState,
+                       ResultState = (TestResultState) result.ResultState,
                        Message = result.Message,
                        StackTrace = result.StackTrace,
                        Duration = result.Time,

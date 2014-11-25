@@ -3,20 +3,21 @@
 // ****************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace UnityTest
 {
     /// <summary>
-    /// Summary description for StackTraceFilter.
+    ///     Summary description for StackTraceFilter.
     /// </summary>
     public class StackTraceFilter
     {
         public static string Filter(string stack)
         {
-            if (stack == null) return null;
+            if (stack == null)
+            {
+                return null;
+            }
             var sw = new StringWriter();
             var sr = new StringReader(stack);
 
@@ -26,7 +27,9 @@ namespace UnityTest
                 while ((line = sr.ReadLine()) != null)
                 {
                     if (!FilterLine(line))
+                    {
                         sw.WriteLine(line.Trim());
+                    }
                 }
             }
             catch (Exception)
@@ -36,7 +39,7 @@ namespace UnityTest
             return sw.ToString();
         }
 
-        static bool FilterLine(string line)
+        private static bool FilterLine(string line)
         {
             string[] patterns =
             {
@@ -53,7 +56,9 @@ namespace UnityTest
             for (int i = 0; i < patterns.Length; i++)
             {
                 if (line.IndexOf(patterns[i]) > 0)
+                {
                     return true;
+                }
             }
 
             return false;
