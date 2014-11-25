@@ -4,21 +4,30 @@ public class GameLogicParameters : ScriptableObject
 {
 
     private static GameLogicParameters _instance;
-   
+    [SerializeField]
+    private float _minUfoInterval = 30;
+    [SerializeField]
+    private float _maxUfoInterval = 60;
+
     [SerializeField]
     private int _defaultNumberOfNewAsteroids = 4;
+
     [SerializeField]
     private float _defaultPlayerSpeed = 3;
+
     [SerializeField]
     private float _playerRotateSpeed = 360;
-    [SerializeField]
-    private int _pointsForAsteroid = 10;
+
     [SerializeField]
     private int _pointsTillUfo = 100;
+
     [SerializeField]
     private int _startNumberOfLifes = 3;
+
     [SerializeField]
     private float _undestructableTime = 3f;
+
+    
 
     public static GameLogicParameters Instance
     {
@@ -85,11 +94,20 @@ public class GameLogicParameters : ScriptableObject
         }
     }
 
-    public static int PointsForAsteroid
+    public static float MinUfoInterval
     {
         get
         {
-            return Instance._pointsForAsteroid;
+            return Instance._minUfoInterval;
+        }
+    }
+
+    public static float MaxUfoInterval
+    {
+        get
+        {
+            return Instance._maxUfoInterval;
         }
     }
 }
+   

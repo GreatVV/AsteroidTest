@@ -50,4 +50,10 @@ public class EditorUtils
     {
         CreateAssetFile<GameLogicParameters>();
     }
+
+    [MenuItem("Custom/Point Manager")]
+    public static void CreatePointManager()
+    {
+        CreateAssetFile<PointManager>();
+    }
 }

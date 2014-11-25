@@ -391,6 +391,7 @@ MonoBehaviour:
   playerFactory: {fileID: 11400000, guid: 0000070f14b046c4eabeac6f7de574e3, type: 2}
   gameLogicParameters: {fileID: 11400000, guid: 67ba0ccd51323dd488b20358594a8ccf,
     type: 2}
+  pointManager: {fileID: 11400000, guid: 172fd0b0592a1ac439dad9645500fbeb, type: 2}
 --- !u!4 &761058295
 Transform:
   m_ObjectHideFlags: 0
@@ -747,7 +748,7 @@ AudioSource:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1203006180}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_audioClip: {fileID: 8300000, guid: 718c85776b7f0dc4a9b5dc14d49b510f, type: 3}
   m_PlayOnAwake: 1

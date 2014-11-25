@@ -3,6 +3,14 @@ using UnityEngine;
 
 public class EnemyFactory : ScriptableObject
 {
+    private static EnemyFactory _instance;
+    public GameObject[] AsteroidPrefabs = new GameObject[0];
+
+    public GameObject[] EnemyPrefabs = new GameObject[0];
+
+    public Vector3 MaxSpeed = new Vector3(100, 100);
+    public Vector3 MinSpeed = new Vector3(-100, -100);
+
     public static EnemyFactory Instance
     {
         get
@@ -20,15 +28,6 @@ public class EnemyFactory : ScriptableObject
         }
     }
 
-    public GameObject[] AsteroidPrefabs = new GameObject[0];
-
-    public GameObject[] EnemyPrefabs = new GameObject[0];
-
-    public Vector3 MinSpeed = new Vector3(-100,-100);
-
-    public Vector3 MaxSpeed = new Vector3(100,100);
-    private static EnemyFactory _instance;
-
     public Asteroid CreateAsteroid(Vector3 position, int timeToDivide = 3)
     {
         return CreateAsteroid(
@@ -42,16 +41,20 @@ public class EnemyFactory : ScriptableObject
         Asteroid asteroid;
         if (AsteroidPrefabs.Any())
         {
-            asteroid = ((GameObject)Instantiate(AsteroidPrefabs[Random.Range(0, AsteroidPrefabs.Count())])).GetComponent<Asteroid>();
-        } 
-        else 
+            asteroid =
+                ((GameObject) Instantiate(AsteroidPrefabs[Random.Range(0, AsteroidPrefabs.Count())]))
+                    .GetComponent<Asteroid>();
+        }
+        else
         {
-            asteroid = new GameObject("asteroid", typeof(Asteroid)).GetComponent<Asteroid>();
+            asteroid = new GameObject("asteroid", typeof (Asteroid)).GetComponent<Asteroid>();
+            asteroid.gameObject.AddComponent<Rigidbody2D>();
         }
         asteroid.Position = position;
         asteroid.Speed = speed;
         asteroid.TimeToDivide = timeToDivide;
         asteroid.transform.localScale *= timeToDivide;
+        asteroid.rigidbody2D.mass *= timeToDivide;
         return asteroid;
     }
 
@@ -67,11 +70,11 @@ public class EnemyFactory : ScriptableObject
         Ufo ufo;
         if (EnemyPrefabs.Any())
         {
-            ufo = ((GameObject)Instantiate(EnemyPrefabs[Random.Range(0, EnemyPrefabs.Count())])).GetComponent<Ufo>();
+            ufo = ((GameObject) Instantiate(EnemyPrefabs[Random.Range(0, EnemyPrefabs.Count())])).GetComponent<Ufo>();
         }
         else
         {
-            ufo = new GameObject("ufo", typeof(Ufo)).GetComponent<Ufo>();
+            ufo = new GameObject("ufo", typeof (Ufo)).GetComponent<Ufo>();
             ufo.gameObject.layer = LayerMask.NameToLayer(StringConstants.AsteroidLayerName);
         }
         ufo.Position = position;

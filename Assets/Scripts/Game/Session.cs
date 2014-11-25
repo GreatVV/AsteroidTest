@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Session : MonoBehaviour
 {
@@ -105,26 +107,8 @@ public class Session : MonoBehaviour
         }
     }
 
-    private int _pointsTillUfo = 0;
-
     public void OnDestroyed(IMovable movable)
     {
-        if (movable is Asteroid)
-        {
-            var asteroid = movable as Asteroid;
-            var pointsForAsteroid = PointManager.Instance.GetPointsForAsteroid(asteroid);
-            Score += pointsForAsteroid;
-            _pointsTillUfo -= pointsForAsteroid;
-            if (_pointsTillUfo <= 0)
-            {
-                _pointsTillUfo = GameLogicParameters.PointsTillUfo;
-                if (Field)
-                {
-                    Field.CreateUfo();
-                }
-            }
-        }
-
         if (movable is Player)
         {
             Lifes--;
@@ -141,11 +125,18 @@ public class Session : MonoBehaviour
                 Field.SpawnPlayer();
             }
         }
+        else
+        {
+            Score += PointManager.Instance.GetPointsForMovable(movable);
+        }
     }
 
     public void Restart()
     {
         SaveToPrefs();
+
+        StopAllCoroutines();
+        StartCoroutine(CreateUfoAfter(30));
 
         if (UI)
         {
@@ -183,5 +174,12 @@ public class Session : MonoBehaviour
         }
         
         Restart();
+    }
+
+    public IEnumerator CreateUfoAfter(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        Field.CreateUfo();
+        StartCoroutine(CreateUfoAfter(Random.Range(GameLogicParameters.MinUfoInterval, GameLogicParameters.MaxUfoInterval)));
     }
 }
