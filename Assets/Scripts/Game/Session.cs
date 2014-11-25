@@ -7,9 +7,9 @@ public class Session : MonoBehaviour
 {
     [SerializeField]
     private Field _field;
-    private int _lifes;
     [SerializeField]
     public UI UI;
+    private int _lifes;
     private int _highScore;
     private int _score;
 
@@ -143,6 +143,10 @@ public class Session : MonoBehaviour
         {
             UI.ShowGameOver(false);
         }
+        else
+        {
+            Debug.LogWarning("UI isn't found");
+        }
 
         Score = 0;
         HighScore = PlayerPrefs.GetInt(StringConstants.HighScorePref, 0);
@@ -151,6 +155,10 @@ public class Session : MonoBehaviour
         if (Field)
         {
             Field.StartGame();
+        }
+        else
+        {
+            Debug.LogWarning("Field isn't found");
         }
     }
 
@@ -167,7 +175,16 @@ public class Session : MonoBehaviour
     {
         if (!Field)
         {
+            Debug.LogWarning("Field is not set. Try to find");
             Field = FindObjectOfType<Field>();
+            if (Field)
+            {
+                Debug.Log("Field is found: " + Field);
+            }
+            else
+            {
+                Debug.LogError("Field is not found! Crash...");
+            }
         }
         else
         {

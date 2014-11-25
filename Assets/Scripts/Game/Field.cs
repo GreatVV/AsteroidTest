@@ -4,18 +4,25 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof (Camera))]
 public class Field : MonoBehaviour
 {
     public List<IMovable> AllMovableObjects = new List<IMovable>();
-    public float Height;
 
-    public bool SetToCameraSize = true;
-    public float Width;
     private AsteroidManager _asteroidManager;
+
     private Player _player;
 
-  
+    [SerializeField]
+    public bool SetToCameraSize = true;
+
+    [SerializeField]
+    public Camera TargetCamera = null;
+
+    [SerializeField]
+    public float Width = 4;
+
+    [SerializeField]
+    public float Height = 4;
 
     #region Events
 
@@ -68,7 +75,8 @@ public class Field : MonoBehaviour
                 Vector3 playerPosition = Player.Position;
                 if (Vector3.Distance(playerPosition, position) < 2)
                 {
-                    position += (position - playerPosition + new Vector3(Random.Range(0.5f, 1), Random.Range(0.5f, 1))) * Random.Range(2, 4);
+                    position += (position - playerPosition + new Vector3(Random.Range(0.5f, 1), Random.Range(0.5f, 1))) *
+                                Random.Range(2, 4);
                 }
             }
 
@@ -85,19 +93,17 @@ public class Field : MonoBehaviour
 
     private void Awake()
     {
-        CreateAsteroidManager();
+        CheckAsteroidManager();
     }
 
-    // Use this for initialization
     private void Start()
     {
         if (SetToCameraSize)
         {
-            SetSizeWithAspect(camera.orthographicSize * 2f, camera.aspect);
+            SetSizeWithAspect(TargetCamera.orthographicSize * 2f, TargetCamera.aspect);
         }
     }
 
-    // Update is called once per frame
     public void Update()
     {
         CheckOutOfBounds();
@@ -106,9 +112,9 @@ public class Field : MonoBehaviour
 
     private void CheckOutOfBounds()
     {
-        for (int index = 0; index < AllMovableObjects.Count; index++)
+        for (var index = 0; index < AllMovableObjects.Count; index++)
         {
-            IMovable allMovableObject = AllMovableObjects[index];
+            var allMovableObject = AllMovableObjects[index];
             if (IsOutOfBounds(allMovableObject))
             {
                 if (allMovableObject is ITeleportable)
@@ -148,7 +154,7 @@ public class Field : MonoBehaviour
             return;
         }
         movable.Collided += OnCollided;
-        movable.Destroyed += FireDestroyed; 
+        movable.Destroyed += FireDestroyed;
         AllMovableObjects.Add(movable);
 
         movable.GameObject.transform.parent = transform;
@@ -158,13 +164,13 @@ public class Field : MonoBehaviour
     {
         if (collideObject is Bullet || collidedWith is Bullet)
         {
-         //   Debug.Log("Colided "+collidedWith.GameObject + " : "+collideObject);
+            //   Debug.Log("Colided "+collidedWith.GameObject + " : "+collideObject);
         }
 
-        var bullet = collideObject as Bullet ?? collidedWith as Bullet;
-        var player = collideObject as Player ?? collidedWith as Player;
-        var asteroid = collideObject as Asteroid ?? collidedWith as Asteroid;
-        var ufo = collideObject as Ufo ?? collidedWith as Ufo;
+        Bullet bullet = collideObject as Bullet ?? collidedWith as Bullet;
+        Player player = collideObject as Player ?? collidedWith as Player;
+        Asteroid asteroid = collideObject as Asteroid ?? collidedWith as Asteroid;
+        Ufo ufo = collideObject as Ufo ?? collidedWith as Ufo;
 
         if (asteroid && bullet)
         {
@@ -285,7 +291,7 @@ public class Field : MonoBehaviour
 
     public void DeleteAllMovableObjects()
     {
-        foreach (var allMovableObject in AllMovableObjects)
+        foreach (IMovable allMovableObject in AllMovableObjects)
         {
             DestroyImmediate(allMovableObject.GameObject);
         }
@@ -293,24 +299,24 @@ public class Field : MonoBehaviour
         AllMovableObjects.Clear();
     }
 
-    private void CreateAsteroidManager()
+    private void CheckAsteroidManager()
     {
-        _asteroidManager = new AsteroidManager(this);
+        if (_asteroidManager == null)
+        {
+            _asteroidManager = new AsteroidManager(this);
+        }
     }
 
     public void CreateUfo()
     {
-        var enemy = EnemyFactory.Instance.CreateEnemy(RandomFreePosition);
+        Ufo enemy = EnemyFactory.Instance.CreateEnemy(RandomFreePosition);
         enemy.Field = this;
         AddMovable(enemy);
     }
 
     public void CreateRandomAsteroids(int amount)
     {
-        if (_asteroidManager == null)
-        {
-            CreateAsteroidManager();
-        }
+        CheckAsteroidManager();
 
         for (int i = 0; i < amount; i++)
         {

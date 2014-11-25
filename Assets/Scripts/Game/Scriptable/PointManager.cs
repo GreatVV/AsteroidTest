@@ -46,7 +46,7 @@ public class PointManager : ScriptableObject
             return GetPointsForAsteroid(asteroid);
         }
 
-        var ufo = movable as Asteroid;
+        var ufo = movable as Ufo;
         if (ufo)
         {
             return PointsForUfo;
