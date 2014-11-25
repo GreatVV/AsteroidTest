@@ -6,11 +6,15 @@ public class FactoryInitializer : MonoBehaviour
     private EnemyFactory _enemyFactory = null;
 
     [SerializeField]
-    private PlayerFactory playerFactory = null; 
+    private PlayerFactory playerFactory = null;
+
+    [SerializeField]
+    private GameLogicParameters gameLogicParameters = null; 
 
     void Awake()
     {
         EnemyFactory.Instance = _enemyFactory;
         PlayerFactory.Instance = playerFactory;
+        GameLogicParameters.Instance = gameLogicParameters;
     }
 }

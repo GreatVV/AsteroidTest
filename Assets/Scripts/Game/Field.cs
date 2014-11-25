@@ -156,13 +156,21 @@ public class Field : MonoBehaviour
 
     public void OnCollided(IMovable collideObject, IMovable collidedWith)
     {
-       // Debug.Log("Colided "+collidedWith.GameObject + " : "+collideObject);
-        if (collideObject is Asteroid && collidedWith is Bullet)
+        if (collideObject is Bullet || collidedWith is Bullet)
         {
-            var bullet = collidedWith as Bullet;
+         //   Debug.Log("Colided "+collidedWith.GameObject + " : "+collideObject);
+        }
+
+        var bullet = collideObject as Bullet ?? collidedWith as Bullet;
+        var player = collideObject as Player ?? collidedWith as Player;
+        var asteroid = collideObject as Asteroid ?? collidedWith as Asteroid;
+        var ufo = collideObject as Ufo ?? collidedWith as Ufo;
+
+        if (asteroid && bullet)
+        {
             if (bullet.Owner is Player)
             {
-                _asteroidManager.CheckCollisions(bullet, collideObject as Asteroid);
+                _asteroidManager.CheckCollisions(bullet, asteroid);
 
                 if (!AreThereAnyAsteroids)
                 {
@@ -171,27 +179,33 @@ public class Field : MonoBehaviour
             }
         }
 
-        if (collideObject is Asteroid && collidedWith is Player)
+        if (asteroid && player)
         {
-            TryKillPlayer(collidedWith);
+            TryKillPlayer();
         }
 
-        if (collideObject is Bullet && collidedWith is Player)
+        if (bullet && player)
         {
-            var bullet = collideObject as Bullet;
             if (!(bullet.Owner is Player))
             {
-                TryKillPlayer(collidedWith);
+                TryKillPlayer();
+            }
+        }
+
+        if (bullet && ufo)
+        {
+            if (bullet.Owner is Player)
+            {
+                Remove(ufo);
             }
         }
     }
 
-    private void TryKillPlayer(IMovable collidedWith)
+    private void TryKillPlayer()
     {
-        var player = collidedWith as Player;
-        if (!player.IsUndestructable)
+        if (!Player.IsUndestructable)
         {
-            Remove(player);
+            Remove(Player);
         }
     }
 
@@ -271,9 +285,9 @@ public class Field : MonoBehaviour
 
     public void DeleteAllMovableObjects()
     {
-        while (AllMovableObjects.Any())
+        foreach (var allMovableObject in AllMovableObjects)
         {
-            Remove(AllMovableObjects.First());
+            DestroyImmediate(allMovableObject.GameObject);
         }
 
         AllMovableObjects.Clear();
@@ -287,6 +301,7 @@ public class Field : MonoBehaviour
     public void CreateUfo()
     {
         var enemy = EnemyFactory.Instance.CreateEnemy(RandomFreePosition);
+        enemy.Field = this;
         AddMovable(enemy);
     }
 

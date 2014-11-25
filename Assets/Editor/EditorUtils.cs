@@ -44,4 +44,10 @@ public class EditorUtils
     {
         CreateAssetFile<BulletFactory>();
     }
+
+    [MenuItem("Custom/Game Logic Parameters")]
+    public static void CreateGameLogicParameters()
+    {
+        CreateAssetFile<GameLogicParameters>();
+    }
 }

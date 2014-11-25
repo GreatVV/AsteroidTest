@@ -3,7 +3,22 @@ using UnityEngine;
 
 public class EnemyFactory : ScriptableObject
 {
-    public static EnemyFactory Instance { get; set; }
+    public static EnemyFactory Instance
+    {
+        get
+        {
+            if (!_instance)
+            {
+                return CreateInstance<EnemyFactory>();
+            }
+
+            return _instance;
+        }
+        set
+        {
+            _instance = value;
+        }
+    }
 
     public GameObject[] AsteroidPrefabs = new GameObject[0];
 
@@ -12,6 +27,7 @@ public class EnemyFactory : ScriptableObject
     public Vector3 MinSpeed = new Vector3(-100,-100);
 
     public Vector3 MaxSpeed = new Vector3(100,100);
+    private static EnemyFactory _instance;
 
     public Asteroid CreateAsteroid(Vector3 position, int timeToDivide = 3)
     {
@@ -56,6 +72,7 @@ public class EnemyFactory : ScriptableObject
         else
         {
             ufo = new GameObject("ufo", typeof(Ufo)).GetComponent<Ufo>();
+            ufo.gameObject.layer = LayerMask.NameToLayer(StringConstants.AsteroidLayerName);
         }
         ufo.Position = position;
         ufo.Speed = speed;

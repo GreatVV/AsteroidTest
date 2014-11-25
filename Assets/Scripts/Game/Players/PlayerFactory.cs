@@ -29,6 +29,7 @@ public class PlayerFactory : ScriptableObject
         {
             player = new GameObject("player", typeof (Player)).GetComponent<Player>();
             player.gameObject.AddComponent<BoxCollider>();
+            player.gameObject.layer = LayerMask.NameToLayer(StringConstants.PlayerLayerName);
         }
         else
         {

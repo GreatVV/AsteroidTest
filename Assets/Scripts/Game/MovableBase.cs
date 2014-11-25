@@ -84,4 +84,10 @@ public class MovableBase : MonoBehaviour, IMovable
         var collidedWith = other.gameObject.GetComponent<MovableBase>();
         FireCollided(this, collidedWith);
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var collidedWith = other.gameObject.GetComponent<MovableBase>();
+        FireCollided(this, collidedWith);
+    }
 }

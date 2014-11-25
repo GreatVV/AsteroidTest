@@ -1,17 +1,39 @@
-﻿public class GameLogicParameters
-{
-    private static float _bulletSpeed = 10;
-    private static float _playerRotateSpeed = 360;
-    private static int _defaultNumberOfNewAsteroids = 4;
-    private static float _defaultPlayerSpeed = 3;
-    private static int _startNumberOfLifes = 3;
-    public static int PointsForAsteroid = 10;
+﻿using UnityEngine;
 
-    public static float BulletSpeed
+public class GameLogicParameters : ScriptableObject
+{
+
+    private static GameLogicParameters _instance;
+   
+    [SerializeField]
+    private int _defaultNumberOfNewAsteroids = 4;
+    [SerializeField]
+    private float _defaultPlayerSpeed = 3;
+    [SerializeField]
+    private float _playerRotateSpeed = 360;
+    [SerializeField]
+    private int _pointsForAsteroid = 10;
+    [SerializeField]
+    private int _pointsTillUfo = 100;
+    [SerializeField]
+    private int _startNumberOfLifes = 3;
+    [SerializeField]
+    private float _undestructableTime = 3f;
+
+    public static GameLogicParameters Instance
     {
         get
         {
-            return _bulletSpeed;
+            if (!_instance)
+            {
+                Debug.LogWarning("There is no instance of gamelogic parameters - create new one");
+                _instance = CreateInstance<GameLogicParameters>();
+            }
+            return _instance;
+        }
+        set
+        {
+            _instance = value;
         }
     }
 
@@ -19,7 +41,7 @@
     {
         get
         {
-            return _playerRotateSpeed;
+            return Instance._playerRotateSpeed;
         }
     }
 
@@ -27,7 +49,7 @@
     {
         get
         {
-            return _defaultNumberOfNewAsteroids;
+            return Instance._defaultNumberOfNewAsteroids;
         }
     }
 
@@ -35,7 +57,7 @@
     {
         get
         {
-            return _defaultPlayerSpeed;
+            return Instance._defaultPlayerSpeed;
         }
     }
 
@@ -43,10 +65,31 @@
     {
         get
         {
-            return _startNumberOfLifes;
+            return Instance._startNumberOfLifes;
         }
     }
 
-    public static float UndestructableTime = 3f;
-    public static int PointsTillUfo = 100;
+    public static float UndestructableTime
+    {
+        get
+        {
+            return Instance._undestructableTime;
+        }
+    }
+
+    public static int PointsTillUfo
+    {
+        get
+        {
+            return Instance._pointsTillUfo;
+        }
+    }
+
+    public static int PointsForAsteroid
+    {
+        get
+        {
+            return Instance._pointsForAsteroid;
+        }
+    }
 }

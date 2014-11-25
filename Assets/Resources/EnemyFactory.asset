@@ -15,5 +15,5 @@ MonoBehaviour:
   - {fileID: 100002, guid: b3f1ff745ba6e31498bb92ab9b369459, type: 2}
   EnemyPrefabs:
   - {fileID: 100002, guid: 83bc37e0c38db9845be2ee373d30905c, type: 2}
-  MinSpeed: {x: -5, y: -5, z: 0}
-  MaxSpeed: {x: 5, y: 5, z: 0}
+  MinSpeed: {x: -2, y: -2, z: 0}
+  MaxSpeed: {x: 2, y: 2, z: 0}

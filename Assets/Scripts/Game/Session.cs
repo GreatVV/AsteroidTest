@@ -118,7 +118,10 @@ public class Session : MonoBehaviour
             if (_pointsTillUfo <= 0)
             {
                 _pointsTillUfo = GameLogicParameters.PointsTillUfo;
-                Field.CreateUfo();
+                if (Field)
+                {
+                    Field.CreateUfo();
+                }
             }
         }
 

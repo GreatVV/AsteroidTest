@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -10,8 +11,6 @@ public class Player : MovableBase, ITeleportable
     private AudioClip _deathSound = null;
 
     private bool _isUndestructable = true;
-
-    private float _undestructableTime = GameLogicParameters.UndestructableTime;
 
     [SerializeField]
     private Weapon[] _weapons = null;
@@ -37,6 +36,7 @@ public class Player : MovableBase, ITeleportable
     {
         get
         {
+            CheckWeapons();
             return _weapons;
         }
     }
@@ -74,11 +74,7 @@ public class Player : MovableBase, ITeleportable
 
     public void Shoot()
     {
-        if (Weapons == null || Weapons.Length == 0)
-        {
-            var weapon = new GameObject("weapon", typeof (Weapon)).GetComponent<Weapon>();
-            _weapons = new[] {weapon};
-        }
+        CheckWeapons();
 
         foreach (var weapon in Weapons)
         {
@@ -90,21 +86,33 @@ public class Player : MovableBase, ITeleportable
         }
     }
 
+    private void CheckWeapons()
+    {
+        if (_weapons == null || _weapons.Length == 0)
+        {
+            var weapon = new GameObject("weapon", typeof (Weapon)).GetComponent<Weapon>();
+            weapon.Owner = this;
+            _weapons = new[]
+                       {
+                           weapon
+                       };
+        }
+    }
+
     public void Start()
     {
         if (Weapons == null || Weapons.Length == 0)
         {
             Debug.LogError("You didn't add any weapon");
         }
+
+        StartCoroutine(TurnOffUndestructable(GameLogicParameters.UndestructableTime));
     }
 
-    public void Update()
+    private IEnumerator TurnOffUndestructable(float undestructableTime)
     {
-        _undestructableTime -= Time.deltaTime;
-        if (_undestructableTime < 0)
-        {
-            IsUndestructable = false;
-        }
+        yield return new WaitForSeconds(undestructableTime);
+        IsUndestructable = false;
     }
 
     public void Rotate(float timePassed)

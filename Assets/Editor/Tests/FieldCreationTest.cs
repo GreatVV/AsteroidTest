@@ -55,10 +55,10 @@ public class FieldCreationTest
     public void BulletCreationTest()
     {
         var bulletFactory = ScriptableObject.CreateInstance<BulletFactory>();
-        var bullet = bulletFactory.CreateBullet(Vector3.zero, new Vector3(1,0), 10);
+        var bullet = bulletFactory.CreateBullet(Vector3.zero, new Vector3(1,0));
 
         Assert.AreEqual(Vector3.zero, bullet.Position);
-        Assert.AreEqual(new Vector3(10,0), bullet.Speed);
+        Assert.AreEqual(bulletFactory.BulletSpeed, bullet.Speed.magnitude);
     }
 
     [Test]

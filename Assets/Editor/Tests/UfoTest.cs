@@ -29,17 +29,45 @@ public class UfoTest
 
         var ufo = field.AllMovableObjects.First() as Ufo;
         Assert.IsNotNull(ufo);
-        
-        var bullet = ufo.Shoot().First();
 
+        Assert.AreEqual(1, field.AllMovableObjects.Count);
+
+        ufo.TryShoot();
+
+        var bullet = field.AllMovableObjects.First(x=>x is Bullet) as Bullet;
+        Assert.IsNotNull(bullet);
         Assert.AreSame(ufo, bullet.Owner);
+        Assert.AreEqual(2, field.AllMovableObjects.Count);
 
         field.SpawnPlayer();
+
+        Assert.AreNotEqual(field.Player.gameObject.layer, bullet.gameObject.layer);
+        Assert.AreEqual(LayerMask.NameToLayer(StringConstants.PlayerLayerName), field.Player.gameObject.layer);
+        Assert.AreEqual(LayerMask.NameToLayer(StringConstants.AsteroidLayerName), bullet.gameObject.layer);
+
+        field.Player.IsUndestructable = false;
 
         Assert.AreEqual(3, field.AllMovableObjects.Count);
 
         field.OnCollided(bullet, field.Player);
 
+        Assert.That(!field.Player);
+    }
 
+    [Test]
+    public void WeaponTest()
+    {
+        var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
+        field.SpawnPlayer();
+
+        var weapon = field.Player.Weapons.First();
+
+        var targetBulletSpeed = 15;
+
+        weapon.BulletSpeed = targetBulletSpeed;
+
+        var bullet = weapon.Shoot();
+
+        Assert.AreEqual(targetBulletSpeed, bullet.Speed.magnitude);
     }
 }
