@@ -1,19 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : MovableBase, ITeleportable
 {
-    public BulletFactory BulletFactory;
     public float RotationSpeed;
 
-    public List<IMovable> ShootedBullets = new List<IMovable>();
+    [SerializeField]
+    private AudioClip _deathSound = null;
+
+    private bool _isUndestructable = true;
+
+    private float _undestructableTime = GameLogicParameters.UndestructableTime;
+
+    [SerializeField]
+    private Weapon[] _weapons = null;
+
+    #region Events
+
+    protected virtual void FireIndestructableStateChanged(bool state)
+    {
+        Action<bool> handler = IndestructableStateChanged;
+        if (handler != null)
+        {
+            handler(state);
+        }
+    }
+
+    public event Action<bool> IndestructableStateChanged;
+
+    #endregion
 
     public Field Field { get; set; }
 
-    #region ITeleportable Members
-
-    public bool WasTeleported { get; set; }
+    public Weapon[] Weapons
+    {
+        get
+        {
+            return _weapons;
+        }
+    }
 
     public bool IsUndestructable
     {
@@ -28,39 +54,9 @@ public class Player : MovableBase, ITeleportable
         }
     }
 
-    public event Action<bool> IndestructableStateChanged;
+    #region ITeleportable Members
 
-    protected virtual void FireIndestructableStateChanged(bool state)
-    {
-        Action<bool> handler = IndestructableStateChanged;
-        if (handler != null)
-        {
-            handler(state);
-        }
-    }
-
-    [SerializeField]
-    private AudioClip _shootSound = null;
-    [SerializeField]
-    private AudioClip _deathSound = null;
-
-    #endregion
-
-    public void Shoot()
-    {
-        CheckBulletFactory();
-
-        Bullet bullet = BulletFactory.CreateBullet(Position, transform.up, GameLogicParameters.BulletSpeed);
-        bullet.transform.rotation = transform.rotation;
-        bullet.Destroyed += OnBulletDestroyed;
-        ShootedBullets.Add(bullet);
-
-        SoundManager.PlaySound(_shootSound, 0.2f);
-
-        Field.AddMovable(bullet);
-    }
-
-   
+    public bool WasTeleported { get; set; }
 
     public override void SelfDestroy()
     {
@@ -74,33 +70,33 @@ public class Player : MovableBase, ITeleportable
         base.SelfDestroy();
     }
 
-    public void OnBulletDestroyed(IMovable bullet)
-    {
-        ShootedBullets.Remove(bullet);
-    }
+    #endregion
 
-    private void Start()
+    public void Shoot()
     {
-        CheckBulletFactory();
-        
-    }
-
-    private void CheckBulletFactory()
-    {
-        if (!BulletFactory)
+        if (Weapons == null || Weapons.Length == 0)
         {
-            if (!BulletFactory.Instance)
-            {
-                BulletFactory.Instance = ScriptableObject.CreateInstance<BulletFactory>();
-            }
+            var weapon = new GameObject("weapon", typeof (Weapon)).GetComponent<Weapon>();
+            _weapons = new[] {weapon};
+        }
 
-            BulletFactory = BulletFactory.Instance;
+        foreach (var weapon in Weapons)
+        {
+            var bullet = weapon.Shoot();
+            if (bullet)
+            {
+                Field.AddMovable(bullet);
+            }
         }
     }
 
-    private bool _isUndestructable = true;
-
-    private float _undestructableTime = GameLogicParameters.UndestructableTime;
+    public void Start()
+    {
+        if (Weapons == null || Weapons.Length == 0)
+        {
+            Debug.LogError("You didn't add any weapon");
+        }
+    }
 
     public void Update()
     {
@@ -109,31 +105,6 @@ public class Player : MovableBase, ITeleportable
         {
             IsUndestructable = false;
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Shoot();
-        }
-
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
-        {
-            RotationSpeed = Input.GetKey(KeyCode.RightArrow) ? -GameLogicParameters.PlayerRotateSpeed : GameLogicParameters.PlayerRotateSpeed;
-        }
-        else
-        {
-            RotationSpeed = 0;
-        }
-
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
-        }
-        else
-        {
-            Speed = Vector3.zero;
-        }
-
-        Rotate(Time.deltaTime);
     }
 
     public void Rotate(float timePassed)

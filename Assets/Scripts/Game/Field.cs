@@ -54,6 +54,28 @@ public class Field : MonoBehaviour
         }
     }
 
+    public Vector3 RandomFreePosition
+    {
+        get
+        {
+            var position = new Vector3();
+
+            position.x = Random.Range(-Width / 2f, Width / 2f);
+            position.y = Random.Range(-Height / 2f, Height / 2f);
+
+            if (Player)
+            {
+                Vector3 playerPosition = Player.Position;
+                if (Vector3.Distance(playerPosition, position) < 2)
+                {
+                    position += (position - playerPosition + new Vector3(Random.Range(0.5f, 1), Random.Range(0.5f, 1))) * Random.Range(2, 4);
+                }
+            }
+
+            return position;
+        }
+    }
+
     public void SetSize(float width, float height)
     {
         Height = height;
@@ -132,26 +154,44 @@ public class Field : MonoBehaviour
         movable.GameObject.transform.parent = transform;
     }
 
-    private void OnCollided(IMovable collideObject, IMovable collidedWith)
+    public void OnCollided(IMovable collideObject, IMovable collidedWith)
     {
        // Debug.Log("Colided "+collidedWith.GameObject + " : "+collideObject);
         if (collideObject is Asteroid && collidedWith is Bullet)
         {
-            _asteroidManager.CheckCollisions(collidedWith as Bullet, collideObject as Asteroid);
-
-            if (!AreThereAnyAsteroids)
+            var bullet = collidedWith as Bullet;
+            if (bullet.Owner is Player)
             {
-                CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
+                _asteroidManager.CheckCollisions(bullet, collideObject as Asteroid);
+
+                if (!AreThereAnyAsteroids)
+                {
+                    CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
+                }
             }
         }
 
         if (collideObject is Asteroid && collidedWith is Player)
         {
-            var player = collidedWith as Player;
-            if (!player.IsUndestructable)
+            TryKillPlayer(collidedWith);
+        }
+
+        if (collideObject is Bullet && collidedWith is Player)
+        {
+            var bullet = collideObject as Bullet;
+            if (!(bullet.Owner is Player))
             {
-                Remove(player);
+                TryKillPlayer(collidedWith);
             }
+        }
+    }
+
+    private void TryKillPlayer(IMovable collidedWith)
+    {
+        var player = collidedWith as Player;
+        if (!player.IsUndestructable)
+        {
+            Remove(player);
         }
     }
 
@@ -244,6 +284,12 @@ public class Field : MonoBehaviour
         _asteroidManager = new AsteroidManager(this);
     }
 
+    public void CreateUfo()
+    {
+        var enemy = EnemyFactory.Instance.CreateEnemy(RandomFreePosition);
+        AddMovable(enemy);
+    }
+
     public void CreateRandomAsteroids(int amount)
     {
         if (_asteroidManager == null)
@@ -253,21 +299,7 @@ public class Field : MonoBehaviour
 
         for (int i = 0; i < amount; i++)
         {
-            var position = new Vector3();
-
-            position.x = Random.Range(-Width / 2f, Width / 2f);
-            position.y = Random.Range(-Height / 2f, Height / 2f);
-
-            if (Player)
-            {
-                Vector3 playerPosition = Player.Position;
-                if (Vector3.Distance(playerPosition, position) < 2)
-                {
-                    position += (position - playerPosition + new Vector3(Random.Range(0.5f, 1), Random.Range(0.5f, 1))) * Random.Range(2, 4);
-                }
-            }
-
-            _asteroidManager.CreateAsteroid(position, Vector3.zero);
+            _asteroidManager.CreateAsteroid(RandomFreePosition, 3);
         }
     }
 }

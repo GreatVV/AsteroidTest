@@ -23,8 +23,8 @@ public class AsteroidManager
 
         if (timeToDivide > 0)
         {
-            var newAsteroid1 = CreateAsteroid(position, Vector3.forward, timeToDivide);
-            var newAsteroid2 = CreateAsteroid(position, Vector3.forward, timeToDivide);
+            var newAsteroid1 = CreateAsteroid(position, timeToDivide);
+            var newAsteroid2 = CreateAsteroid(position, timeToDivide);
             
             newAsteroids.Add(newAsteroid1);
             newAsteroids.Add(newAsteroid2);
@@ -49,14 +49,16 @@ public class AsteroidManager
 
     Field Field { get; set; }
 
-    public Asteroid CreateAsteroid(Vector3 position, Vector3 speed, int timeToDivide = 3, bool takeFactoryValues = true)
+    public Asteroid CreateAsteroid(Vector3 position, int timeToDivide = 3)
     {
-        if (AsteroidFactory.Instance == null)
-        {
-            AsteroidFactory.Instance = ScriptableObject.CreateInstance<AsteroidFactory>();
-        }
+        Asteroid asteroid = EnemyFactory.Instance.CreateAsteroid(position, timeToDivide);
+        Field.AddMovable(asteroid);
+        return asteroid;
+    }
 
-        Asteroid asteroid = takeFactoryValues ? AsteroidFactory.Instance.CreateAsteroid(position, timeToDivide) : AsteroidFactory.Instance.CreateAsteroid(position, speed, timeToDivide);
+    public Asteroid CreateAsteroid(Vector3 position, Vector3 speed, int timeToDivide = 3)
+    {
+        Asteroid asteroid = EnemyFactory.Instance.CreateAsteroid(position, speed, timeToDivide);
         Field.AddMovable(asteroid);
         return asteroid;
     }

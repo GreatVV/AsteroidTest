@@ -48,4 +48,5 @@
     }
 
     public static float UndestructableTime = 3f;
+    public static int PointsTillUfo = 100;
 }

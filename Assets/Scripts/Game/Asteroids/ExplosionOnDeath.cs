@@ -26,6 +26,4 @@ public class ExplosionOnDeath : MonoBehaviour
         var moveable = GetComponent<MovableBase>();
         moveable.Destroyed += OnDestroyed;
     }
-
-
 }

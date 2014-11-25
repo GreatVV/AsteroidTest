@@ -3,14 +3,14 @@ using UnityEngine;
 public class FactoryInitializer : MonoBehaviour
 {
     [SerializeField]
-    private AsteroidFactory asteroidFactory = null;
+    private EnemyFactory _enemyFactory = null;
 
     [SerializeField]
     private PlayerFactory playerFactory = null; 
 
     void Awake()
     {
-        AsteroidFactory.Instance = asteroidFactory;
+        EnemyFactory.Instance = _enemyFactory;
         PlayerFactory.Instance = playerFactory;
     }
 }

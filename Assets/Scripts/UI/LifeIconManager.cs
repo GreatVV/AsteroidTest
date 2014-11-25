@@ -46,7 +46,7 @@ public class LifeIconManager : MonoBehaviour
                 }
 
                 var go = Instantiate(_liveIconPrefab) as GameObject;
-                go.transform.parent = transform;
+                go.transform.SetParent(transform);
             }
         }
     }

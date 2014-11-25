@@ -47,7 +47,7 @@ public class FieldCreationTest
 
         field.Player.Shoot();
 
-        Assert.AreEqual(1, field.Player.ShootedBullets.Count);
+        Assert.AreEqual(1, field.Player.Weapons[0].ShootedBullets.Count);
         Assert.AreEqual(6, field.AllMovableObjects.Count);
     }
 
@@ -108,5 +108,23 @@ public class FieldCreationTest
         field.DeleteAllMovableObjects();
 
         Assert.AreEqual(0, field.AllMovableObjects.Count);
+    }
+
+    [Test]
+    public void RandomFieldPoint()
+    {
+        var field = new GameObject("field", typeof(Field)).GetComponent<Field>();
+        var width = 10;
+        var height = 10;
+        field.SetSize(width, height);
+        field.SpawnPlayer();
+
+        var randomPosition = field.RandomFreePosition;
+
+        Assert.Greater(randomPosition.x, -width / 2f);
+        Assert.Greater(randomPosition.y, -height / 2f);
+        Assert.Less(randomPosition.x, width / 2f);
+        Assert.Less(randomPosition.y, height / 2f);
+        Assert.Greater(Vector3.Distance(field.Player.Position, randomPosition), 2);
     }
 }

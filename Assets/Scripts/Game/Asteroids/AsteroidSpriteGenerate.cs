@@ -27,7 +27,7 @@ public class AsteroidSpriteGenerate : MonoBehaviour
 
         for (int index = 0; index < vertices.Count-3; index++)
         {
-            var vector3 = vertices[index];
+            //var vector3 = vertices[index];
             triangles.Add(index);
             triangles.Add(index+1);
             triangles.Add(index+2);

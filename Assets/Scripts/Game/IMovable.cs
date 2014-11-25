@@ -12,8 +12,6 @@ public interface IMovable
     event Action<IMovable> Destroyed;
     void SelfDestroy();
 
-    
-
     GameObject GameObject { get; }
 }
 

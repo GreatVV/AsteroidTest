@@ -105,12 +105,21 @@ public class Session : MonoBehaviour
         }
     }
 
+    private int _pointsTillUfo = 0;
+
     public void OnDestroyed(IMovable movable)
     {
         if (movable is Asteroid)
         {
             var asteroid = movable as Asteroid;
-            Score += PointManager.Instance.GetPointsForAsteroid(asteroid);
+            var pointsForAsteroid = PointManager.Instance.GetPointsForAsteroid(asteroid);
+            Score += pointsForAsteroid;
+            _pointsTillUfo -= pointsForAsteroid;
+            if (_pointsTillUfo <= 0)
+            {
+                _pointsTillUfo = GameLogicParameters.PointsTillUfo;
+                Field.CreateUfo();
+            }
         }
 
         if (movable is Player)

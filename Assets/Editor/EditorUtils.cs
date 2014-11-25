@@ -30,7 +30,7 @@ public class EditorUtils
     [MenuItem("Custom/Create asteroid manager")]
     public static void CreateAsteroidFactory()
     {
-        CreateAssetFile<AsteroidFactory>();
+        CreateAssetFile<EnemyFactory>();
     }
 
     [MenuItem("Custom/Create player manager")]

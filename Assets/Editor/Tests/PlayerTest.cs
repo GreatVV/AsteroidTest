@@ -21,9 +21,9 @@ public class PlayerTest {
 
         field.Player.Shoot();
 
-        Assert.AreEqual(1, field.Player.ShootedBullets.Count);
+        Assert.AreEqual(1, field.Player.Weapons[0].ShootedBullets.Count);
 
-        var bullet = field.Player.ShootedBullets.First();
+        var bullet = field.Player.Weapons[0].ShootedBullets.First();
 
         Assert.AreEqual(new Vector3(0,10), bullet.Speed);
     }

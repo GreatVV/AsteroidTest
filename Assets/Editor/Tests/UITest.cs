@@ -67,7 +67,7 @@ public class UITest
 
         var asteroidManager = new AsteroidManager(field);
 
-        var asteroid = asteroidManager.CreateAsteroid(new Vector3(5, 0, 0), Vector3.zero, takeFactoryValues: false);
+        var asteroid = asteroidManager.CreateAsteroid(new Vector3(5, 0, 0), 3);
         asteroid.TimeToDivide = 3;
 
         session.OnDestroyed(asteroid);

@@ -18,7 +18,7 @@ namespace Assets
 
             var asteroidManager = new AsteroidManager(field);
 
-            var asteroid = asteroidManager.CreateAsteroid(new Vector3(1, 5, 0), Vector3.zero, takeFactoryValues: false);
+            var asteroid = asteroidManager.CreateAsteroid(new Vector3(1, 5, 0), 3);
 
             field.AddMovable(asteroid);
 
@@ -38,7 +38,7 @@ namespace Assets
 
             var asteroidManager = new AsteroidManager(field);
 
-            var asteroid = asteroidManager.CreateAsteroid(new Vector3(5,0,0),Vector3.zero, takeFactoryValues:false );
+            var asteroid = asteroidManager.CreateAsteroid(new Vector3(5,0,0), 3 );
 
             field.SpawnPlayer();
             var ship = field.Player;
@@ -61,7 +61,7 @@ namespace Assets
 
             var asteroidManager = new AsteroidManager(field);
 
-            var asteroid = asteroidManager.CreateAsteroid(new Vector3(1, -5, 0), new Vector3(0, -1, 0),takeFactoryValues:false);
+            var asteroid = asteroidManager.CreateAsteroid(new Vector3(1, -5, 0), new Vector3(0, -1, 0), 3);
 
             var newPosition = field.NewPositionFor(asteroid);
             asteroid.Position = newPosition;

@@ -15,7 +15,7 @@ public class AsteroidPopulatingTest {
         field.SetSize(10,10);
 
         var asteroidManager = new AsteroidManager(field);
-        var newAsteroid = asteroidManager.CreateAsteroid(position, speed, takeFactoryValues:false);
+        var newAsteroid = asteroidManager.CreateAsteroid(position, speed);
 
         Assert.AreEqual(position, newAsteroid.Position);
         Assert.AreEqual(speed, newAsteroid.Speed);
