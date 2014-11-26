@@ -7,27 +7,8 @@ namespace Game.Scriptable
 {
     public class PointManager : ScriptableObject
     {
-        private static PointManager _instance;
-
         public int PointsForAsteroid = 10;
         public int PointsForUfo = 100;
-
-        public static PointManager Instance
-        {
-            get
-            {
-                if (_instance != null)
-                {
-                    return _instance;
-                }
-                Debug.LogWarning("Point Manager is null - create new one");
-                return _instance = CreateInstance<PointManager>();
-            }
-            set
-            {
-                _instance = value;
-            }
-        }
 
         public int GetPointsForAsteroid(Asteroid asteroid)
         {

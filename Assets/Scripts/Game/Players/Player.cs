@@ -40,7 +40,6 @@ namespace Game.Players
         {
             get
             {
-                CheckWeapons();
                 return _weapons;
             }
         }
@@ -78,8 +77,6 @@ namespace Game.Players
 
         public void Shoot()
         {
-            CheckWeapons();
-
             foreach (var weapon in Weapons)
             {
                 var bullet = weapon.Shoot();
@@ -87,19 +84,6 @@ namespace Game.Players
                 {
                     Field.AddMovable(bullet);
                 }
-            }
-        }
-
-        private void CheckWeapons()
-        {
-            if (_weapons == null || _weapons.Length == 0)
-            {
-                var weapon = new GameObject("weapon", typeof (Weapon)).GetComponent<Weapon>();
-                weapon.Owner = this;
-                _weapons = new[]
-                           {
-                               weapon
-                           };
             }
         }
 
@@ -114,7 +98,7 @@ namespace Game.Players
         void OnEnable()
         {
             IsUndestructable = true;
-            StartCoroutine(TurnOffUndestructable(GameLogicParameters.UndestructableTime));
+            StartCoroutine(TurnOffUndestructable(Instance.GameLogicParameters.UndestructableTime));
         }
 
         private IEnumerator TurnOffUndestructable(float undestructableTime)
@@ -131,6 +115,14 @@ namespace Game.Players
         public void Rotate(Quaternion rotation, float timePassed)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, timePassed * 5);
+        }
+
+        public void Reload()
+        {
+            foreach (var weapon in Weapons)
+            {
+                weapon.Reload();
+            }
         }
     }
 }

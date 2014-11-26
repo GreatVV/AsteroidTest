@@ -8,27 +8,9 @@ namespace Game.Scriptable
     public class PlayerFactory : ScriptableObject
     {
         public GameObject PlayerPrefab;
-        private static PlayerFactory _instance;
 
         [NonSerialized]
         private Player _playerInstance;
-
-        public static PlayerFactory Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    return CreateInstance<PlayerFactory>();
-                }
-
-                return _instance;
-            }
-            set
-            {
-                _instance = value;
-            }
-        }
 
         public Player CreatePlayer()
         {
@@ -55,6 +37,11 @@ namespace Game.Scriptable
             }
 
             return player;
+        }
+
+        public void Clear()
+        {
+            _playerInstance = null;
         }
     }
 }

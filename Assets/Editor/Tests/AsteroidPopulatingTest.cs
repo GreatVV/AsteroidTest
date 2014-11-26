@@ -88,11 +88,10 @@ public class AsteroidPopulatingTest
         var field = new GameObject("field", typeof (Field)).GetComponent<Field>();
         field.SetSize(10, 10);
 
-        Player player = PlayerFactory.Instance.CreatePlayer();
+        field.SpawnPlayer();
+        var player = field.Player;
         player.Speed = new Vector3(0, 1, 0);
-
-        field.SpawnPlayer(player, true);
-
+       
         const float timePassed = 0.2f;
         field.UpdateMove(timePassed);
 

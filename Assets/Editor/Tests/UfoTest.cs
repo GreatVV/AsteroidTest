@@ -2,6 +2,7 @@
 using Game;
 using Game.Asteroids;
 using Game.Players;
+using Game.Scriptable;
 using Game.Shared;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,6 +11,12 @@ using Utils;
 [TestFixture]
 public class UfoTest
 {
+    [SetUp]
+    public void SetUp()
+    {
+        ObjectPool.Instance.Clear();
+    }
+
     [Test]
     public void CreateTest()
     {
@@ -42,17 +49,17 @@ public class UfoTest
         var bullet = field.AllMovableObjects.First(x => x is Bullet) as Bullet;
         Assert.IsNotNull(bullet);
         Assert.AreSame(ufo, bullet.Owner);
-        Assert.AreEqual(2, field.AllMovableObjects.Count);
+        Assert.AreEqual(1 + ufo.Weapons.Length, field.AllMovableObjects.Count);
 
         field.SpawnPlayer();
 
         Assert.AreNotEqual(field.Player.gameObject.layer, bullet.gameObject.layer);
         Assert.AreEqual(LayerMask.NameToLayer(StringConstants.PlayerLayerName), field.Player.gameObject.layer);
-        Assert.AreEqual(LayerMask.NameToLayer(StringConstants.AsteroidLayerName), bullet.gameObject.layer);
+        Assert.AreEqual(ufo.gameObject.layer, bullet.gameObject.layer);
 
         field.Player.IsUndestructable = false;
 
-        Assert.AreEqual(3, field.AllMovableObjects.Count);
+        Assert.AreEqual(1+1+ufo.Weapons.Length, field.AllMovableObjects.Count);
 
         field.OnCollided(bullet, field.Player);
 
@@ -70,7 +77,7 @@ public class UfoTest
         int targetBulletSpeed = 15;
 
         weapon.BulletSpeed = targetBulletSpeed;
-
+        weapon.Reload();
         Bullet bullet = weapon.Shoot();
 
         Assert.AreEqual(targetBulletSpeed, bullet.Speed.magnitude);

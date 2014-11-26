@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Game;
+using Game.Scriptable;
 using Game.Shared;
 using NUnit.Framework;
 using UnityEngine;
@@ -7,6 +8,13 @@ using UnityEngine;
 [TestFixture]
 public class PlayerTest
 {
+    [SetUp]
+    public void Setup()
+    {
+        ObjectPool.Instance.Clear();
+        Instance.PlayerFactory.Clear();
+    }
+
     [Test]
     public void RotateTest()
     {
@@ -30,13 +38,22 @@ public class PlayerTest
     [Test]
     public void Shoot()
     {
+        Assert.AreEqual(0, ObjectPool.Instance.Count);
+
         const int width = 10;
         const int height = 10;
 
         var field = new GameObject("field", typeof (Field)).GetComponent<Field>();
         field.SetSize(width, height);
+        
+        Assert.AreEqual(0, field.AllMovableObjects.Count);
+        Assert.IsFalse(field.Player);
 
         field.StartGame();
+
+        Assert.AreEqual(0, field.Player.Weapons[0].ShootedBullets.Count);
+
+        Assert.AreEqual(1 + Instance.GameLogicParameters.DefaultNumberOfNewAsteroids, field.AllMovableObjects.Count);
 
         field.Player.transform.rotation = Quaternion.Euler(0, 0, 0);
 

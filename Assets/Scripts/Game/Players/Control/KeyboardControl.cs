@@ -25,8 +25,8 @@ namespace Game.Players.Control
                 if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
                 {
                     _player.RotationSpeed = Input.GetKey(KeyCode.RightArrow)
-                                                ? -GameLogicParameters.PlayerRotateSpeed
-                                                : GameLogicParameters.PlayerRotateSpeed;
+                                                ? -Instance.GameLogicParameters.PlayerRotateSpeed
+                                                : Instance.GameLogicParameters.PlayerRotateSpeed;
                 }
             
                 if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
@@ -36,7 +36,7 @@ namespace Game.Players.Control
 
                 if (Input.GetKey(KeyCode.UpArrow))
                 {
-                    _player.Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
+                    _player.Speed = Instance.GameLogicParameters.DefaultPlayerSpeed * transform.up;
                 }
             
                 if (Input.GetKeyUp(KeyCode.UpArrow))

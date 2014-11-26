@@ -99,7 +99,7 @@ public class UITest
         session.Restart();
         session.HighScore = 100;
 
-        Assert.AreEqual(GameLogicParameters.StartNumberOfLifes, ui.Lifes);
+        Assert.AreEqual(Instance.GameLogicParameters.StartNumberOfLifes, ui.Lifes);
         Assert.AreEqual(session.HighScore, ui.HighScore);
         Assert.AreEqual(100, ui.HighScore);
     }

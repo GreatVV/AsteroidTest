@@ -133,7 +133,7 @@ namespace Game
             }
             else
             {
-                Score += PointManager.Instance.GetPointsForMovable(movable);
+                Score += Instance.PointManager.GetPointsForMovable(movable);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Game
 
             Score = 0;
             HighScore = PlayerPrefs.GetInt(StringConstants.HighScorePref, 0);
-            Lifes = GameLogicParameters.StartNumberOfLifes;
+            Lifes = Instance.GameLogicParameters.StartNumberOfLifes;
 
             if (Field)
             {
@@ -203,7 +203,7 @@ namespace Game
         {
             yield return new WaitForSeconds(seconds);
             Field.CreateUfo();
-            StartCoroutine(CreateUfoAfter(Random.Range(GameLogicParameters.MinUfoInterval, GameLogicParameters.MaxUfoInterval)));
+            StartCoroutine(CreateUfoAfter(Random.Range(Instance.GameLogicParameters.MinUfoInterval, Instance.GameLogicParameters.MaxUfoInterval)));
         }
     }
 }

@@ -17,6 +17,19 @@ namespace Game.Scriptable
             }
         }
 
+        public int Count
+        {
+            get
+            {
+                return _movables.Count;
+            }
+        }
+
+        private ObjectPool()
+        {
+            
+        }
+
         [NonSerialized]
         private List<IMovable> _movables = new List<IMovable>();
 

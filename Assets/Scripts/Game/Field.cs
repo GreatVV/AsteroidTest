@@ -84,6 +84,9 @@ namespace Game
                         position += (position - playerPosition + new Vector3(Random.Range(0.5f, 1), Random.Range(0.5f, 1))) *
                                     Random.Range(2, 4);
                     }
+
+                    position.x = Mathf.Clamp(position.x, -Width / 2f, Width / 2f);
+                    position.y = Mathf.Clamp(position.y, -Height / 2f, Height / 2f);
                 }
 
                 return position;
@@ -187,7 +190,7 @@ namespace Game
 
                     if (!AreThereAnyAsteroids)
                     {
-                        CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
+                        CreateRandomAsteroids(Instance.GameLogicParameters.DefaultNumberOfNewAsteroids);
                     }
                 }
             }
@@ -290,12 +293,12 @@ namespace Game
             DeleteAllMovableObjects();
 
             SpawnPlayer();
-            CreateRandomAsteroids(GameLogicParameters.DefaultNumberOfNewAsteroids);
+            CreateRandomAsteroids(Instance.GameLogicParameters.DefaultNumberOfNewAsteroids);
         }
 
         public void SpawnPlayer()
         {
-            SpawnPlayer(PlayerFactory.Instance.CreatePlayer(), true);
+            SpawnPlayer(Instance.PlayerFactory.CreatePlayer(), true);
         }
 
         public void DeleteAllMovableObjects()
@@ -318,7 +321,7 @@ namespace Game
 
         public void CreateUfo()
         {
-            Ufo enemy = EnemyFactory.Instance.CreateEnemy(RandomFreePosition);
+            Ufo enemy = Instance.EnemyFactory.CreateEnemy(RandomFreePosition);
             enemy.Field = this;
             AddMovable(enemy);
         }

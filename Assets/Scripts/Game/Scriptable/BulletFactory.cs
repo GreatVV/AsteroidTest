@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Game.Players;
-using Game.Shared;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Game.Scriptable
 {
     public class BulletFactory : ScriptableObject
     {
-        public static BulletFactory Instance { get; set; }
-
         public GameObject[] BulletPrefab = new GameObject[0];
 
         public float BulletSpeed = 10;
-     
 
         public Bullet CreateBullet(Vector3 position, Vector3 direction, float bulletSpeed = -1)
         {

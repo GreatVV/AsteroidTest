@@ -45,7 +45,7 @@ namespace Game.Players.Control
             _player.Rotate(Time.deltaTime);*/
 
                 _player.Rotate(RotationFor(Input.acceleration), Time.deltaTime);
-                _player.Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
+                _player.Speed = Instance.GameLogicParameters.DefaultPlayerSpeed * transform.up;
             }
         }
 

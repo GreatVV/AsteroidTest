@@ -54,14 +54,14 @@ namespace Game.Asteroids
 
         public Asteroid CreateAsteroid(Vector3 position, int timeToDivide = 3)
         {
-            Asteroid asteroid = EnemyFactory.Instance.CreateAsteroid(position, timeToDivide);
+            Asteroid asteroid = Instance.EnemyFactory.CreateAsteroid(position, timeToDivide);
             Field.AddMovable(asteroid);
             return asteroid;
         }
 
         public Asteroid CreateAsteroid(Vector3 position, Vector3 speed, int timeToDivide = 3)
         {
-            Asteroid asteroid = EnemyFactory.Instance.CreateAsteroid(position, speed, timeToDivide);
+            Asteroid asteroid = Instance.EnemyFactory.CreateAsteroid(position, speed, timeToDivide);
             Field.AddMovable(asteroid);
             return asteroid;
         }

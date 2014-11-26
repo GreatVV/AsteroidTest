@@ -12,7 +12,6 @@ namespace Game.Scriptable
 {
     public class EnemyFactory : ScriptableObject
     {
-        private static EnemyFactory _instance;
         public GameObject[] AsteroidPrefabs = new GameObject[0];
 
         public GameObject[] EnemyPrefabs = new GameObject[0];
@@ -22,23 +21,6 @@ namespace Game.Scriptable
 
         public Vector3 DefaultAsteroidSize = new Vector3(0.3f, 0.3f, 0.3f);
         public float DefaultAsteroidMass = 5;
-
-        public static EnemyFactory Instance
-        {
-            get
-            {
-                if (!_instance)
-                {
-                    return CreateInstance<EnemyFactory>();
-                }
-
-                return _instance;
-            }
-            set
-            {
-                _instance = value;
-            }
-        }
 
         public Asteroid CreateAsteroid(Vector3 position, int timeToDivide = 3)
         {

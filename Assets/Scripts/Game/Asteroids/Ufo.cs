@@ -20,7 +20,7 @@ namespace Game.Asteroids
 
             if (Speed.magnitude < 0.5f)
             {
-                Speed = new Vector3(Random.Range(EnemyFactory.Instance.MinSpeed.x, EnemyFactory.Instance.MaxSpeed.x), Random.Range(EnemyFactory.Instance.MinSpeed.y, EnemyFactory.Instance.MaxSpeed.y));
+                Speed = new Vector3(Random.Range(Instance.EnemyFactory.MinSpeed.x, Instance.EnemyFactory.MaxSpeed.x), Random.Range(Instance.EnemyFactory.MinSpeed.y, Instance.EnemyFactory.MaxSpeed.y));
             }
         }
 
@@ -34,6 +34,14 @@ namespace Game.Asteroids
         }
 
         public bool WasTeleported { get; set; }
+
+        public Weapon[] Weapons
+        {
+            get
+            {
+                return _weapons;
+            }
+        }
 
         private IEnumerable<Bullet> Shoot()
         {

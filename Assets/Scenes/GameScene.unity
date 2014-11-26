@@ -469,50 +469,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 695051346}
---- !u!1 &761058293
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 761058295}
-  - 114: {fileID: 761058294}
-  m_Layer: 0
-  m_Name: FactoryInitalizer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &761058294
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 761058293}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f205e80e45f44604cb98ab950d59c372, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enemyFactory: {fileID: 11400000, guid: 93a60b72de202d04e9656cce30f63ffc, type: 2}
-  playerFactory: {fileID: 11400000, guid: 0000070f14b046c4eabeac6f7de574e3, type: 2}
-  gameLogicParameters: {fileID: 11400000, guid: 67ba0ccd51323dd488b20358594a8ccf,
-    type: 2}
-  pointManager: {fileID: 11400000, guid: 172fd0b0592a1ac439dad9645500fbeb, type: 2}
---- !u!4 &761058295
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 761058293}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
 --- !u!1 &912329335
 GameObject:
   m_ObjectHideFlags: 0

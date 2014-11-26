@@ -29,86 +29,69 @@ namespace Game.Scriptable
         [SerializeField]
         private float _undestructableTime = 3f;
 
-    
+       
 
-        public static GameLogicParameters Instance
+        public float PlayerRotateSpeed
         {
             get
             {
-                if (!_instance)
-                {
-                    Debug.LogWarning("There is no instance of gamelogic parameters - create new one");
-                    _instance = CreateInstance<GameLogicParameters>();
-                }
-                return _instance;
-            }
-            set
-            {
-                _instance = value;
+                return _playerRotateSpeed;
             }
         }
 
-        public static float PlayerRotateSpeed
+        public int DefaultNumberOfNewAsteroids
         {
             get
             {
-                return Instance._playerRotateSpeed;
+                return _defaultNumberOfNewAsteroids;
             }
         }
 
-        public static int DefaultNumberOfNewAsteroids
+        public float DefaultPlayerSpeed
         {
             get
             {
-                return Instance._defaultNumberOfNewAsteroids;
+                return _defaultPlayerSpeed;
             }
         }
 
-        public static float DefaultPlayerSpeed
+        public int StartNumberOfLifes
         {
             get
             {
-                return Instance._defaultPlayerSpeed;
+                return _startNumberOfLifes;
             }
         }
 
-        public static int StartNumberOfLifes
+        public float UndestructableTime
         {
             get
             {
-                return Instance._startNumberOfLifes;
+                return _undestructableTime;
             }
         }
 
-        public static float UndestructableTime
+        public int PointsTillUfo
         {
             get
             {
-                return Instance._undestructableTime;
+                return _pointsTillUfo;
             }
         }
 
-        public static int PointsTillUfo
+        public float MinUfoInterval
         {
             get
             {
-                return Instance._pointsTillUfo;
+                return _minUfoInterval;
             }
         }
 
-        public static float MinUfoInterval
+        public float MaxUfoInterval
         {
             get
             {
-                return Instance._minUfoInterval;
-            }
-        }
-
-        public static float MaxUfoInterval
-        {
-            get
-            {
-                return Instance._maxUfoInterval;
+                return _maxUfoInterval;
             }
         }
     }

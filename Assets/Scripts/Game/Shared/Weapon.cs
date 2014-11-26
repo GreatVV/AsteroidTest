@@ -17,34 +17,19 @@ namespace Game.Shared
         private AudioClip _shootSound = null;
 
         public List<IMovable> ShootedBullets = new List<IMovable>();
-
-        public BulletFactory BulletFactory;
+        
         private MovableBase _owner;
         public float BulletSpeed = -1f;
-
-        private void CheckBulletFactory()
-        {
-            if (!BulletFactory)
-            {
-                if (!BulletFactory.Instance)
-                {
-                    BulletFactory.Instance = ScriptableObject.CreateInstance<BulletFactory>();
-                }
-
-                BulletFactory = BulletFactory.Instance;
-            }
-        }
-
+        
         public Bullet Shoot()
         {
+          //  Debug.Log("Shoot from "+Owner);
             if (_currentCooldown > 0)
                 return null;
 
             _currentCooldown = Cooldown;
 
-            CheckBulletFactory();
-
-            Bullet bullet = BulletFactory.CreateBullet(transform.position, transform.up, BulletSpeed);
+            Bullet bullet = Instance.BulletFactory.CreateBullet(transform.position, transform.up, BulletSpeed);
             bullet.transform.rotation = transform.rotation;
             bullet.Destroyed += OnBulletDestroyed;
             bullet.Owner = Owner;
@@ -82,7 +67,13 @@ namespace Game.Shared
 
         public void OnBulletDestroyed(IMovable bullet)
         {
+            bullet.Destroyed -= OnBulletDestroyed;
             ShootedBullets.Remove(bullet);
+        }
+
+        public void Reload()
+        {
+            _currentCooldown = 0;
         }
     }
 }

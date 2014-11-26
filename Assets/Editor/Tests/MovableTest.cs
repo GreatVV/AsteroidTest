@@ -1,6 +1,7 @@
 ﻿using Game;
 using Game.Asteroids;
 using Game.Players;
+using Game.Scriptable;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -9,6 +10,12 @@ namespace Assets
     [TestFixture]
     public class MovableTest
     {
+        [SetUp]
+        public void SetUp()
+        {
+            ObjectPool.Instance.Clear();
+        }
+
         [Test]
         public void MultipleTeleportTest()
         {
@@ -63,12 +70,13 @@ namespace Assets
 
             var asteroidManager = new AsteroidManager(field);
 
-            Asteroid asteroid = asteroidManager.CreateAsteroid(new Vector3(1, -5, 0), new Vector3(0, -1, 0), 3);
-
+            Asteroid asteroid = asteroidManager.CreateAsteroid(new Vector3(1, -5, 0), new Vector3(0, -1, 0));
+            Assert.AreEqual(new Vector3(0,-1,0), asteroid.Speed);
             Vector3 newPosition = field.NewPositionFor(asteroid);
             asteroid.Position = newPosition;
 
             const float timePassed = 0.2f;
+            asteroid.usePhysics = false;
             asteroid.Move(timePassed);
             Vector3 newPositionAfterSpeedApplied = asteroid.Position;
 

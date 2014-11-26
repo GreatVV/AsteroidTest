@@ -9,7 +9,7 @@ namespace Game.Asteroids
         private Vector3 _speed;
 
         [SerializeField]
-        private bool usePhysics = false;
+        public bool usePhysics = false;
 
   
 
@@ -37,12 +37,11 @@ namespace Game.Asteroids
             }
             set
             {
-                if (!usePhysics)
+                _speed = value;
+                if (usePhysics)
                 {
-                    _speed = value;
-                    return;
+                    rigidbody2D.velocity = value;
                 }
-                rigidbody2D.velocity = value;
             }
         }
 

@@ -9,6 +9,12 @@ using UnityEngine;
 [TestFixture]
 public class FieldCreationTest
 {
+    [SetUp]
+    public void SetUp()
+    {
+        ObjectPool.Instance.Clear();
+    }
+
     [Test]
     public void BulletCreationTest()
     {
@@ -71,11 +77,11 @@ public class FieldCreationTest
         session.Field = field;
         session.Restart();
 
-        Assert.AreEqual(GameLogicParameters.StartNumberOfLifes, session.Lifes);
+        Assert.AreEqual(Instance.GameLogicParameters.StartNumberOfLifes, session.Lifes);
 
         field.Remove(field.Player);
 
-        Assert.AreEqual(GameLogicParameters.StartNumberOfLifes - 1, session.Lifes);
+        Assert.AreEqual(Instance.GameLogicParameters.StartNumberOfLifes - 1, session.Lifes);
 
         Assert.AreNotSame(null, field.Player);
     }
@@ -93,14 +99,18 @@ public class FieldCreationTest
     [Test]
     public void PlayerShootCreationTest()
     {
-        var field = new GameObject("field", typeof (Field)).GetComponent<Field>();
+        var field = GetField();
         field.SetSize(10, 10);
         field.StartGame();
+        
+        var player = field.Player;
+        player.Reload();
+        player.Shoot();
+        
 
-        field.Player.Shoot();
-
-        Assert.AreEqual(1, field.Player.Weapons[0].ShootedBullets.Count);
-        Assert.AreEqual(6, field.AllMovableObjects.Count);
+        var bullets = field.AllMovableObjects.Where(x => x is Bullet);
+        Assert.AreEqual(field.Player.Weapons.Count(), bullets.Count());
+        Assert.AreEqual(1 + 2 + Instance.GameLogicParameters.DefaultNumberOfNewAsteroids, field.AllMovableObjects.Count);
     }
 
     [Test]
@@ -141,6 +151,7 @@ public class FieldCreationTest
     [Test]
     public void ObjectPoolTest()
     {
+        ObjectPool.Instance.Clear();
         var field = GetField();
         var session = GetSession();
 
@@ -149,29 +160,46 @@ public class FieldCreationTest
         field.SpawnPlayer();
 
         var player = field.Player;
-        player.Weapons.First().Cooldown = 0;
+       
 
         Assert.AreEqual(1, field.AllMovableObjects.Count);
 
         player.Shoot();
 
-        Assert.AreEqual(2, field.AllMovableObjects.Count);
+        Assert.AreEqual(1 + player.Weapons.Count(), field.AllMovableObjects.Count);
 
-        var bullet = field.AllMovableObjects.First(x => x is Bullet);
+        var bullets = field.AllMovableObjects.Where(x => x is Bullet).ToArray();
 
-        field.Remove(bullet);
+        foreach (var bullet in bullets)
+        {
+            field.Remove(bullet);
+            Assert.IsNotNull(bullet);
+            Assert.AreEqual(false, bullet.GameObject.activeSelf);
+        }
 
         Assert.AreEqual(1, field.AllMovableObjects.Count);
-        Assert.IsNotNull(bullet);
-        Assert.AreEqual(false, bullet.GameObject.activeSelf);
+
+        foreach (var weapon in player.Weapons)
+        {
+            weapon.Reload();
+        }
 
         player.Shoot();
 
-        Assert.AreEqual(2, field.AllMovableObjects.Count);
+        Assert.AreEqual(1+player.Weapons.Count(), field.AllMovableObjects.Count);
 
-        var newBullet = field.AllMovableObjects.First(x => x is Bullet);
+        var newBullets = field.AllMovableObjects.Where(x => x is Bullet).ToArray();
+
+        foreach (var bullet in bullets)
+        {
+            Assert.AreEqual(true, bullet.GameObject.activeSelf);
+        }
+        for (int i = 0; i < newBullets.Count(); i++)
+        {
+            var bullet = bullets[i];
+            var newBullet = newBullets[i];
+            Assert.AreSame(bullet, newBullet);
+        }
         
-        Assert.AreEqual(true, bullet.GameObject.activeSelf);
-        Assert.AreSame(bullet, newBullet);
     }
 }
