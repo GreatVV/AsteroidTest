@@ -1,61 +1,64 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(HorizontalLayoutGroup))]
-public class LifeIconManager : MonoBehaviour
+namespace UI
 {
-    [SerializeField]
-    private GameObject _liveIconPrefab;
-
-    public int CurrentLifes
+    [RequireComponent(typeof(HorizontalLayoutGroup))]
+    public class LifeIconManager : MonoBehaviour
     {
-        get
-        {
-            return transform.childCount;
-        }
-    }
+        [SerializeField]
+        private GameObject _liveIconPrefab;
 
-    public void SetLives(int newLifeAmount)
-    {
-        if (CurrentLifes == newLifeAmount)
+        public int CurrentLifes
         {
-            return;
-        }
-
-        if (CurrentLifes > newLifeAmount)
-        {
-            for (int i = 0; i <= CurrentLifes - newLifeAmount; i++)
+            get
             {
-                if (Application.isPlaying)
+                return transform.childCount;
+            }
+        }
+
+        public void SetLives(int newLifeAmount)
+        {
+            if (CurrentLifes == newLifeAmount)
+            {
+                return;
+            }
+
+            if (CurrentLifes > newLifeAmount)
+            {
+                for (int i = 0; i <= CurrentLifes - newLifeAmount; i++)
                 {
-                    Destroy(transform.GetChild(0).gameObject);
+                    if (Application.isPlaying)
+                    {
+                        Destroy(transform.GetChild(0).gameObject);
+                    }
+                    else
+                    {
+                        DestroyImmediate(transform.GetChild(0).gameObject);
+                    }
                 }
-                else
+            }
+            else
+            {
+                for (int i = 0; i <= newLifeAmount - CurrentLifes + 1; i++)
                 {
-                    DestroyImmediate(transform.GetChild(0).gameObject);
+                    if (!_liveIconPrefab)
+                    {
+                        _liveIconPrefab = new GameObject("Icon");
+                    }
+
+                    var go = Instantiate(_liveIconPrefab) as GameObject;
+                    go.transform.SetParent(transform);
                 }
             }
         }
-        else
+
+        void Awake()
         {
-            for (int i = 0; i <= newLifeAmount - CurrentLifes + 1; i++)
+            if (!_liveIconPrefab)
             {
-                if (!_liveIconPrefab)
-                {
-                    _liveIconPrefab = new GameObject("Icon");
-                }
-
-                var go = Instantiate(_liveIconPrefab) as GameObject;
-                go.transform.SetParent(transform);
+                _liveIconPrefab = new GameObject("LiveIconPrefab");
             }
-        }
-    }
-
-    void Awake()
-    {
-        if (!_liveIconPrefab)
-        {
-            _liveIconPrefab = new GameObject("LiveIconPrefab");
         }
     }
 }

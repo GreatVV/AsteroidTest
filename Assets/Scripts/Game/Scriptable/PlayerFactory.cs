@@ -1,41 +1,60 @@
+using System;
+using Game.Players;
 using UnityEngine;
+using Utils;
 
-public class PlayerFactory : ScriptableObject
+namespace Game.Scriptable
 {
-    public GameObject PlayerPrefab;
-    private static PlayerFactory _instance;
-
-    public static PlayerFactory Instance
+    public class PlayerFactory : ScriptableObject
     {
-        get
+        public GameObject PlayerPrefab;
+        private static PlayerFactory _instance;
+
+        [NonSerialized]
+        private Player _playerInstance;
+
+        public static PlayerFactory Instance
         {
-            if (_instance == null)
+            get
             {
-                return CreateInstance<PlayerFactory>();
+                if (_instance == null)
+                {
+                    return CreateInstance<PlayerFactory>();
+                }
+
+                return _instance;
+            }
+            set
+            {
+                _instance = value;
+            }
+        }
+
+        public Player CreatePlayer()
+        {
+            Player player;
+
+            if (_playerInstance)
+            {
+                player = _playerInstance;
+                player.GameObject.SetActive(true);
+            }
+            else
+            {
+                if (!PlayerPrefab)
+                {
+                    player = new GameObject("player", typeof (Player)).GetComponent<Player>();
+                    player.gameObject.AddComponent<BoxCollider>();
+                    player.gameObject.layer = LayerMask.NameToLayer(StringConstants.PlayerLayerName);
+                }
+                else
+                {
+                    player = ((GameObject) Instantiate(PlayerPrefab)).GetComponent<Player>();
+                }
+                _playerInstance = player;
             }
 
-            return _instance;
+            return player;
         }
-        set
-        {
-            _instance = value;
-        }
-    }
-
-    public Player CreatePlayer()
-    {
-        Player player;
-        if (!PlayerPrefab)
-        {
-            player = new GameObject("player", typeof (Player)).GetComponent<Player>();
-            player.gameObject.AddComponent<BoxCollider>();
-            player.gameObject.layer = LayerMask.NameToLayer(StringConstants.PlayerLayerName);
-        }
-        else
-        {
-            player = ((GameObject)Instantiate(PlayerPrefab)).GetComponent<Player>();
-        }
-        
-        return player;
     }
 }

@@ -1,5 +1,10 @@
-﻿using NUnit.Framework;
+﻿using Game;
+using Game.Asteroids;
+using Game.Scriptable;
+using NUnit.Framework;
+using UI;
 using UnityEngine;
+using Utils;
 
 [TestFixture]
 public class UITest
@@ -7,7 +12,7 @@ public class UITest
     [Test]
     public void AddPointsTest()
     {
-        var ui = new GameObject("ui", typeof (UI)).GetComponent<UI>();
+        var ui = new GameObject("ui", typeof (UI.UI)).GetComponent<UI.UI>();
 
         var session = new GameObject("session", typeof (Session)).GetComponent<Session>();
         session.UI = ui;
@@ -72,7 +77,7 @@ public class UITest
     [Test]
     public void SetDefaultOnGameStart()
     {
-        var ui = new GameObject("ui", typeof (UI)).GetComponent<UI>();
+        var ui = new GameObject("ui", typeof (UI.UI)).GetComponent<UI.UI>();
 
         var session = new GameObject("session", typeof (Session)).GetComponent<Session>();
         session.UI = ui;
@@ -86,7 +91,7 @@ public class UITest
     [Test]
     public void SetLifes()
     {
-        var ui = new GameObject("ui", typeof (UI)).GetComponent<UI>();
+        var ui = new GameObject("ui", typeof (UI.UI)).GetComponent<UI.UI>();
 
         var session = new GameObject("session", typeof (Session)).GetComponent<Session>();
         session.HighScore = 100;

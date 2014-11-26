@@ -1,112 +1,115 @@
 ﻿using UnityEngine;
 
-public class GameLogicParameters : ScriptableObject
+namespace Game.Scriptable
 {
+    public class GameLogicParameters : ScriptableObject
+    {
 
-    private static GameLogicParameters _instance;
-    [SerializeField]
-    private float _minUfoInterval = 30;
-    [SerializeField]
-    private float _maxUfoInterval = 60;
+        private static GameLogicParameters _instance;
+        [SerializeField]
+        private float _minUfoInterval = 30;
+        [SerializeField]
+        private float _maxUfoInterval = 60;
 
-    [SerializeField]
-    private int _defaultNumberOfNewAsteroids = 4;
+        [SerializeField]
+        private int _defaultNumberOfNewAsteroids = 4;
 
-    [SerializeField]
-    private float _defaultPlayerSpeed = 3;
+        [SerializeField]
+        private float _defaultPlayerSpeed = 3;
 
-    [SerializeField]
-    private float _playerRotateSpeed = 360;
+        [SerializeField]
+        private float _playerRotateSpeed = 360;
 
-    [SerializeField]
-    private int _pointsTillUfo = 100;
+        [SerializeField]
+        private int _pointsTillUfo = 100;
 
-    [SerializeField]
-    private int _startNumberOfLifes = 3;
+        [SerializeField]
+        private int _startNumberOfLifes = 3;
 
-    [SerializeField]
-    private float _undestructableTime = 3f;
+        [SerializeField]
+        private float _undestructableTime = 3f;
 
     
 
-    public static GameLogicParameters Instance
-    {
-        get
+        public static GameLogicParameters Instance
         {
-            if (!_instance)
+            get
             {
-                Debug.LogWarning("There is no instance of gamelogic parameters - create new one");
-                _instance = CreateInstance<GameLogicParameters>();
+                if (!_instance)
+                {
+                    Debug.LogWarning("There is no instance of gamelogic parameters - create new one");
+                    _instance = CreateInstance<GameLogicParameters>();
+                }
+                return _instance;
             }
-            return _instance;
+            set
+            {
+                _instance = value;
+            }
         }
-        set
-        {
-            _instance = value;
-        }
-    }
 
-    public static float PlayerRotateSpeed
-    {
-        get
+        public static float PlayerRotateSpeed
         {
-            return Instance._playerRotateSpeed;
+            get
+            {
+                return Instance._playerRotateSpeed;
+            }
         }
-    }
 
-    public static int DefaultNumberOfNewAsteroids
-    {
-        get
+        public static int DefaultNumberOfNewAsteroids
         {
-            return Instance._defaultNumberOfNewAsteroids;
+            get
+            {
+                return Instance._defaultNumberOfNewAsteroids;
+            }
         }
-    }
 
-    public static float DefaultPlayerSpeed
-    {
-        get
+        public static float DefaultPlayerSpeed
         {
-            return Instance._defaultPlayerSpeed;
+            get
+            {
+                return Instance._defaultPlayerSpeed;
+            }
         }
-    }
 
-    public static int StartNumberOfLifes
-    {
-        get
+        public static int StartNumberOfLifes
         {
-            return Instance._startNumberOfLifes;
+            get
+            {
+                return Instance._startNumberOfLifes;
+            }
         }
-    }
 
-    public static float UndestructableTime
-    {
-        get
+        public static float UndestructableTime
         {
-            return Instance._undestructableTime;
+            get
+            {
+                return Instance._undestructableTime;
+            }
         }
-    }
 
-    public static int PointsTillUfo
-    {
-        get
+        public static int PointsTillUfo
         {
-            return Instance._pointsTillUfo;
+            get
+            {
+                return Instance._pointsTillUfo;
+            }
         }
-    }
 
-    public static float MinUfoInterval
-    {
-        get
+        public static float MinUfoInterval
         {
-            return Instance._minUfoInterval;
+            get
+            {
+                return Instance._minUfoInterval;
+            }
         }
-    }
 
-    public static float MaxUfoInterval
-    {
-        get
+        public static float MaxUfoInterval
         {
-            return Instance._maxUfoInterval;
+            get
+            {
+                return Instance._maxUfoInterval;
+            }
         }
     }
 }

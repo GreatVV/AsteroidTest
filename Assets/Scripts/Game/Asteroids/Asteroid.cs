@@ -1,54 +1,51 @@
+using Game.Shared;
 using UnityEngine;
 
-public class Asteroid : MovableBase, ITeleportable
+namespace Game.Asteroids
 {
-    public int TimeToDivide;
-    private Vector3 _speed;
+    public class Asteroid : MovableBase, ITeleportable
+    {
+        public int TimeToDivide;
+        private Vector3 _speed;
 
-    [SerializeField]
-    private bool usePhysics = false;
+        [SerializeField]
+        private bool usePhysics = false;
 
   
 
-    #region ITeleportable Members
+        #region ITeleportable Members
 
-    public bool WasTeleported { get; set; }
+        public bool WasTeleported { get; set; }
 
-    public override void Move(float timePassed)
-    {
-        if (!usePhysics)
-        {
-            base.Move(timePassed);
-        }
-    }
-
-    public override Vector3 Speed
-    {
-        get
+        public override void Move(float timePassed)
         {
             if (!usePhysics)
             {
-                return _speed;
+                base.Move(timePassed);
             }
-            return rigidbody2D.velocity;
         }
-        set
+
+        public override Vector3 Speed
         {
-            if (!usePhysics)
+            get
             {
-                _speed = value;
-                return;
+                if (!usePhysics)
+                {
+                    return _speed;
+                }
+                return rigidbody2D.velocity;
             }
-            rigidbody2D.velocity = value;
+            set
+            {
+                if (!usePhysics)
+                {
+                    _speed = value;
+                    return;
+                }
+                rigidbody2D.velocity = value;
+            }
         }
-    }
 
-    #endregion
-
-    public override void SelfDestroy()
-    {
-       
-
-        base.SelfDestroy();
+        #endregion
     }
 }

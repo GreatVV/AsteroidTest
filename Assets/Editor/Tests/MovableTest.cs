@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Game;
+using Game.Asteroids;
+using Game.Players;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Assets

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Game.Shared;
 
-public class Bullet : MovableBase
+namespace Game.Players
 {
-    public IMovable Owner;
+    public class Bullet : MovableBase
+    {
+        public IMovable Owner;
+    }
 }

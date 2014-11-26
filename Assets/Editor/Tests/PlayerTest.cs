@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Game;
+using Game.Shared;
 using NUnit.Framework;
 using UnityEngine;
 

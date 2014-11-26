@@ -1,29 +1,32 @@
 using UnityEngine;
 
-[RequireComponent(typeof(MovableBase))]
-public class ExplosionOnDeath : MonoBehaviour
+namespace Game.Shared
 {
-    [SerializeField]
-    private GameObject _explosionPrefab;
-
-    void OnDestroyed(IMovable movable)
+    [RequireComponent(typeof(MovableBase))]
+    public class ExplosionOnDeath : MonoBehaviour
     {
-        if (_explosionPrefab && Application.isPlaying)
-        {
-            var go = Instantiate(_explosionPrefab) as GameObject;
-            go.transform.position = transform.position;
-            Destroy(go, go.particleSystem.duration);
-        }
-    }
+        [SerializeField]
+        private GameObject _explosionPrefab;
 
-    public void Awake()
-    {
-        if (!_explosionPrefab || !_explosionPrefab.particleSystem)
+        void OnDestroyed(IMovable movable)
         {
-            Debug.LogError("Incorrect prefab for explosion = has no particle system");
+            if (_explosionPrefab && Application.isPlaying)
+            {
+                var go = Instantiate(_explosionPrefab) as GameObject;
+                go.transform.position = transform.position;
+                Destroy(go, go.particleSystem.duration);
+            }
         }
 
-        var moveable = GetComponent<MovableBase>();
-        moveable.Destroyed += OnDestroyed;
+        public void Awake()
+        {
+            if (!_explosionPrefab || !_explosionPrefab.particleSystem)
+            {
+                Debug.LogError("Incorrect prefab for explosion = has no particle system");
+            }
+
+            var moveable = GetComponent<MovableBase>();
+            moveable.Destroyed += OnDestroyed;
+        }
     }
 }

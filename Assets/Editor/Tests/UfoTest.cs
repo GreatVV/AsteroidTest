@@ -1,6 +1,11 @@
 ﻿using System.Linq;
+using Game;
+using Game.Asteroids;
+using Game.Players;
+using Game.Shared;
 using NUnit.Framework;
 using UnityEngine;
+using Utils;
 
 [TestFixture]
 public class UfoTest

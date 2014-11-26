@@ -2,79 +2,82 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI : MonoBehaviour
+namespace UI
 {
-    private int _highScore;
-    private int _score;
+    public class UI : MonoBehaviour
+    {
+        private int _highScore;
+        private int _score;
 
-    [SerializeField]
-    private Text highScoreLabel;
+        [SerializeField]
+        private Text highScoreLabel;
 
-    [SerializeField]
-    private Text scoreLabel = null;
+        [SerializeField]
+        private Text scoreLabel = null;
 
-    private int _lifes;
+        private int _lifes;
     
-    [SerializeField]
-    private LifeIconManager LifeIconManager;
+        [SerializeField]
+        private LifeIconManager LifeIconManager;
 
-    public int Score
-    {
-        get
+        public int Score
         {
-            return _score;
-        }
-        set
-        {
-            _score = value;
-            if (scoreLabel)
+            get
             {
-                scoreLabel.text = _score.ToString(CultureInfo.InvariantCulture);
+                return _score;
+            }
+            set
+            {
+                _score = value;
+                if (scoreLabel)
+                {
+                    scoreLabel.text = _score.ToString(CultureInfo.InvariantCulture);
+                }
             }
         }
-    }
 
-    public int HighScore
-    {
-        get
+        public int HighScore
         {
-            return _highScore;
-        }
-        set
-        {
-            _highScore = value;
-
-            if (highScoreLabel)
+            get
             {
-                highScoreLabel.text = _highScore.ToString(CultureInfo.InvariantCulture);
+                return _highScore;
+            }
+            set
+            {
+                _highScore = value;
+
+                if (highScoreLabel)
+                {
+                    highScoreLabel.text = _highScore.ToString(CultureInfo.InvariantCulture);
+                }
             }
         }
-    }
 
-    public int Lifes
-    {
-        get
+        public int Lifes
         {
-            return _lifes;
+            get
+            {
+                return _lifes;
+            }
+            set
+            {
+                _lifes = value;
+                if (LifeIconManager) {LifeIconManager.SetLives(_lifes);}
+            }
         }
-        set
+
+        public void ShowGameOver(bool show = true)
         {
-            _lifes = value;
-            if (LifeIconManager) {LifeIconManager.SetLives(_lifes);}
+            if (_gameOverScreen)
+            {
+                _gameOverScreen.SetActive(show);
+            }
+            //Application.LoadLevel(StringConstants.MenuScene);
         }
+
+        [SerializeField]
+        private GameObject _gameOverScreen;
+
     }
-
-    public void ShowGameOver(bool show = true)
-    {
-        if (_gameOverScreen)
-        {
-            _gameOverScreen.SetActive(show);
-        }
-        //Application.LoadLevel(StringConstants.MenuScene);
-    }
-
-    [SerializeField]
-    private GameObject _gameOverScreen;
-
 }
 

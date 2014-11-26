@@ -1,93 +1,97 @@
 ﻿using System;
 using UnityEngine;
 
-public class MovableBase : MonoBehaviour, IMovable
+namespace Game.Shared
 {
-    #region Events
-
-    public event Action<IMovable> Destroyed;
-
-    protected virtual void FireCollided(IMovable arg1, IMovable arg2)
+    public class MovableBase : MonoBehaviour, IMovable
     {
-        Action<IMovable, IMovable> handler = Collided;
-        if (handler != null)
-        {
-            handler(arg1, arg2);
-        }
-    }
+        #region Events
 
-    private void FireDestroyed(IMovable movable)
-    {
-        if (movable != null)
+        public event Action<IMovable> Destroyed;
+
+        protected virtual void FireCollided(IMovable arg1, IMovable arg2)
         {
-            if (Destroyed != null)
+            Action<IMovable, IMovable> handler = Collided;
+            if (handler != null)
             {
-                Destroyed(movable);
+                handler(arg1, arg2);
             }
         }
-    }
 
-    #endregion
-
-    #region IMovable Members
-
-    public Vector3 Position
-    {
-        get
+        private void FireDestroyed(IMovable movable)
         {
-            return transform.position;
-        }
-        set
-        {
-            transform.position = value;
-        }
-    }
-
-    public virtual Vector3 Speed { get; set; }
-
-    public virtual void Move(float timePassed)
-    {
-        Position += Speed * timePassed;
-    }
-
-    public event Action<IMovable, IMovable> Collided;
-
-    public virtual void SelfDestroy()
-    {
-        if (gameObject)
-        {
-            if (Application.isPlaying)
+            if (movable != null)
             {
-                Destroy(gameObject);
+                if (Destroyed != null)
+                {
+                    Destroyed(movable);
+                }
             }
-            else
-            {
-                DestroyImmediate(gameObject);
-            }
-
-            FireDestroyed(this);
         }
-    }
 
-    public GameObject GameObject
-    {
-        get
+        #endregion
+
+        #region IMovable Members
+
+        public Vector3 Position
         {
-            return gameObject;
+            get
+            {
+                return transform.position;
+            }
+            set
+            {
+                transform.position = value;
+            }
         }
-    }
 
-    #endregion
+        public virtual Vector3 Speed { get; set; }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        var collidedWith = other.gameObject.GetComponent<MovableBase>();
-        FireCollided(this, collidedWith);
-    }
+        public virtual void Move(float timePassed)
+        {
+            Position += Speed * timePassed;
+        }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        var collidedWith = other.gameObject.GetComponent<MovableBase>();
-        FireCollided(this, collidedWith);
+        public event Action<IMovable, IMovable> Collided;
+
+        public virtual void SelfDestroy()
+        {
+            if (gameObject)
+            {
+               /* if (Application.isPlaying)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    DestroyImmediate(gameObject);
+                }*/
+                gameObject.SetActive(false);
+
+                FireDestroyed(this);
+            }
+        }
+
+        public GameObject GameObject
+        {
+            get
+            {
+                return gameObject;
+            }
+        }
+
+        #endregion
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            var collidedWith = other.gameObject.GetComponent<MovableBase>();
+            FireCollided(this, collidedWith);
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            var collidedWith = other.gameObject.GetComponent<MovableBase>();
+            FireCollided(this, collidedWith);
+        }
     }
 }

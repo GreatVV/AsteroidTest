@@ -1,4 +1,9 @@
 ﻿using System.Collections.Generic;
+using Game;
+using Game.Asteroids;
+using Game.Players;
+using Game.Scriptable;
+using Game.Shared;
 using NUnit.Framework;
 using UnityEngine;
 

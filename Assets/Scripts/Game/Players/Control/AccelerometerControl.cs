@@ -1,28 +1,29 @@
 ﻿using System;
-using System.Configuration;
-using System.Runtime.InteropServices;
+using Game.Scriptable;
 using UnityEngine;
 
-public class AccelerometerControl : MonoBehaviour
+namespace Game.Players.Control
 {
-    private Player _player;
-
-    private void Start()
+    public class AccelerometerControl : MonoBehaviour
     {
-        _player = GetComponent<Player>();
+        private Player _player;
 
-        enabled = Input.touchSupported;
-    }
-
-    private void Update()
-    {
-        if (_player)
+        private void Start()
         {
-            if (Input.touchCount > 0)
+            _player = GetComponent<Player>();
+
+            enabled = Input.touchSupported;
+        }
+
+        private void Update()
+        {
+            if (_player)
             {
-                _player.Shoot();
-            }
-            /*
+                if (Input.touchCount > 0)
+                {
+                    _player.Shoot();
+                }
+                /*
             if (Mathf.Abs(Input.acceleration.x) > 0.1f)
             {
                 _player.RotationSpeed = -GameLogicParameters.PlayerRotateSpeed * Input.acceleration.x;
@@ -43,57 +44,58 @@ public class AccelerometerControl : MonoBehaviour
 
             _player.Rotate(Time.deltaTime);*/
 
-            _player.Rotate(RotationFor(Input.acceleration), Time.deltaTime);
-            _player.Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
+                _player.Rotate(RotationFor(Input.acceleration), Time.deltaTime);
+                _player.Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
+            }
         }
-    }
 
-    public Quaternion RotationFor(Vector3 accelerometer)
-    {
-        var x = accelerometer.x;
-        var y = accelerometer.y;
-        var z = 0f;
+        public Quaternion RotationFor(Vector3 accelerometer)
+        {
+            var x = accelerometer.x;
+            var y = accelerometer.y;
+            var z = 0f;
         
-        if (Math.Abs(x) < float.Epsilon)
-        {
-            z = y >= 0 ? 0 : 180;
-        }
-        else
-        {
-            if (Math.Abs(y) < float.Epsilon)
+            if (Math.Abs(x) < float.Epsilon)
             {
-                z = x >= 0 ? -90 : 90;
+                z = y >= 0 ? 0 : 180;
             }
             else
             {
-                if (x > 0 && y > 0)
+                if (Math.Abs(y) < float.Epsilon)
                 {
-                    z = 270 + Mathf.Rad2Deg * Mathf.Atan(Mathf.Abs(x / y));
+                    z = x >= 0 ? -90 : 90;
                 }
                 else
                 {
-                    if (x > 0 && y < 0)
+                    if (x > 0 && y > 0)
                     {
-                        z = 180 + Mathf.Rad2Deg * Mathf.Atan(Mathf.Abs(y / x));
+                        z = 270 + Mathf.Rad2Deg * Mathf.Atan(Mathf.Abs(x / y));
                     }
                     else
                     {
-                        if (x < 0 && y < 0)
+                        if (x > 0 && y < 0)
                         {
-                            z = 90f + Mathf.Rad2Deg * Mathf.Atan(Mathf.Abs(y / x));
+                            z = 180 + Mathf.Rad2Deg * Mathf.Atan(Mathf.Abs(y / x));
                         }
                         else
                         {
-                            if (x < 0 && y > 0)
+                            if (x < 0 && y < 0)
                             {
-                                z = Mathf.Rad2Deg * Mathf.Atan( Mathf.Abs(x / y));
+                                z = 90f + Mathf.Rad2Deg * Mathf.Atan(Mathf.Abs(y / x));
+                            }
+                            else
+                            {
+                                if (x < 0 && y > 0)
+                                {
+                                    z = Mathf.Rad2Deg * Mathf.Atan( Mathf.Abs(x / y));
+                                }
                             }
                         }
                     }
                 }
             }
-        }
         
-        return Quaternion.Euler(0,0,z);
+            return Quaternion.Euler(0,0,z);
+        }
     }
 }

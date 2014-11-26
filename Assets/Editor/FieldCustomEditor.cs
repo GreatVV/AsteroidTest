@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Game;
+using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof (Field))]

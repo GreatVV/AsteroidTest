@@ -1,4 +1,8 @@
 ﻿using System.Linq;
+using Game;
+using Game.Asteroids;
+using Game.Players;
+using Game.Scriptable;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -59,9 +63,9 @@ public class FieldCreationTest
     [Test]
     public void PlayerDiedTest()
     {
-        var session = new GameObject("session", typeof (Session)).GetComponent<Session>();
+        var session = GetSession();
 
-        var field = new GameObject("field", typeof (Field)).GetComponent<Field>();
+        var field = GetField();
         field.SetSize(10, 10);
 
         session.Field = field;
@@ -74,6 +78,16 @@ public class FieldCreationTest
         Assert.AreEqual(GameLogicParameters.StartNumberOfLifes - 1, session.Lifes);
 
         Assert.AreNotSame(null, field.Player);
+    }
+
+    private static Session GetSession()
+    {
+        return new GameObject("session", typeof (Session)).GetComponent<Session>();
+    }
+
+    private static Field GetField()
+    {
+        return new GameObject("field", typeof (Field)).GetComponent<Field>();
     }
 
     [Test]
@@ -122,5 +136,42 @@ public class FieldCreationTest
 
         Assert.AreEqual(16f, field.Width);
         Assert.AreEqual(9f, field.Height);
+    }
+
+    [Test]
+    public void ObjectPoolTest()
+    {
+        var field = GetField();
+        var session = GetSession();
+
+        session.Field = field;
+
+        field.SpawnPlayer();
+
+        var player = field.Player;
+        player.Weapons.First().Cooldown = 0;
+
+        Assert.AreEqual(1, field.AllMovableObjects.Count);
+
+        player.Shoot();
+
+        Assert.AreEqual(2, field.AllMovableObjects.Count);
+
+        var bullet = field.AllMovableObjects.First(x => x is Bullet);
+
+        field.Remove(bullet);
+
+        Assert.AreEqual(1, field.AllMovableObjects.Count);
+        Assert.IsNotNull(bullet);
+        Assert.AreEqual(false, bullet.GameObject.activeSelf);
+
+        player.Shoot();
+
+        Assert.AreEqual(2, field.AllMovableObjects.Count);
+
+        var newBullet = field.AllMovableObjects.First(x => x is Bullet);
+        
+        Assert.AreEqual(true, bullet.GameObject.activeSelf);
+        Assert.AreSame(bullet, newBullet);
     }
 }

@@ -1,16 +1,19 @@
 using UnityEngine;
 
-public class AutoRotate : MonoBehaviour
+namespace Game.Shared
 {
-    public Vector3 Speed = new Vector3(0,0,10);
-
-    public void Rotate(float timePassed)
+    public class AutoRotate : MonoBehaviour
     {
-        transform.Rotate(Speed * timePassed);
-    }
+        public Vector3 Speed = new Vector3(0,0,10);
 
-    void Update()
-    {
-        Rotate(Time.deltaTime);
+        public void Rotate(float timePassed)
+        {
+            transform.Rotate(Speed * timePassed);
+        }
+
+        void Update()
+        {
+            Rotate(Time.deltaTime);
+        }
     }
 }

@@ -1,47 +1,51 @@
-﻿using UnityEngine;
+﻿using Game.Scriptable;
+using UnityEngine;
 
-[RequireComponent(typeof (Player))]
-public class KeyboardControl : MonoBehaviour
+namespace Game.Players.Control
 {
-    private Player _player;
-
-    private void Start()
+    [RequireComponent(typeof (Player))]
+    public class KeyboardControl : MonoBehaviour
     {
-        _player = GetComponent<Player>();
-    }
+        private Player _player;
 
-    private void Update()
-    {
-        if (_player)
+        private void Start()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                _player.Shoot();
-            }
+            _player = GetComponent<Player>();
+        }
 
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
+        private void Update()
+        {
+            if (_player)
             {
-                _player.RotationSpeed = Input.GetKey(KeyCode.RightArrow)
-                                            ? -GameLogicParameters.PlayerRotateSpeed
-                                            : GameLogicParameters.PlayerRotateSpeed;
-            }
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    _player.Shoot();
+                }
+
+                if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    _player.RotationSpeed = Input.GetKey(KeyCode.RightArrow)
+                                                ? -GameLogicParameters.PlayerRotateSpeed
+                                                : GameLogicParameters.PlayerRotateSpeed;
+                }
             
-            if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
-            {
-                _player.RotationSpeed = 0;
-            }
+                if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
+                {
+                    _player.RotationSpeed = 0;
+                }
 
-            if (Input.GetKey(KeyCode.UpArrow))
-            {
-                _player.Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
-            }
+                if (Input.GetKey(KeyCode.UpArrow))
+                {
+                    _player.Speed = GameLogicParameters.DefaultPlayerSpeed * transform.up;
+                }
             
-            if (Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                _player.Speed = Vector3.zero;
-            }
+                if (Input.GetKeyUp(KeyCode.UpArrow))
+                {
+                    _player.Speed = Vector3.zero;
+                }
 
-            _player.Rotate(Time.deltaTime);
+                _player.Rotate(Time.deltaTime);
+            }
         }
     }
 }

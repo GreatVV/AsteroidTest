@@ -1,24 +1,28 @@
+using Game.Scriptable;
 using UnityEngine;
 
-public class FactoryInitializer : MonoBehaviour
+namespace Game.Misc
 {
-    [SerializeField]
-    private EnemyFactory _enemyFactory = null;
-
-    [SerializeField]
-    private PlayerFactory playerFactory = null;
-
-    [SerializeField]
-    private GameLogicParameters gameLogicParameters = null;
-
-    [SerializeField]
-    private PointManager pointManager = null; 
-
-    void Awake()
+    public class FactoryInitializer : MonoBehaviour
     {
-        EnemyFactory.Instance = _enemyFactory;
-        PlayerFactory.Instance = playerFactory;
-        GameLogicParameters.Instance = gameLogicParameters;
-        PointManager.Instance = pointManager;
+        [SerializeField]
+        private EnemyFactory _enemyFactory = null;
+
+        [SerializeField]
+        private PlayerFactory playerFactory = null;
+
+        [SerializeField]
+        private GameLogicParameters gameLogicParameters = null;
+
+        [SerializeField]
+        private PointManager pointManager = null; 
+
+        void Awake()
+        {
+            EnemyFactory.Instance = _enemyFactory;
+            PlayerFactory.Instance = playerFactory;
+            GameLogicParameters.Instance = gameLogicParameters;
+            PointManager.Instance = pointManager;
+        }
     }
 }

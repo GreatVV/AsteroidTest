@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
+using Utils;
 
-public class MainMenuStartButton : MonoBehaviour
+namespace UI
 {
-    public void OnClick()
+    public class MainMenuStartButton : MonoBehaviour
     {
-        Application.LoadLevel(StringConstants.GameScene);
+        public void OnClick()
+        {
+            Application.LoadLevel(StringConstants.GameScene);
+        }
     }
 }
